@@ -413,6 +413,16 @@ void BPTree::mergeInternalNodes(std::shared_ptr<BPNode> parentNode, int leftIdx,
     rightNode->children.clear();
 }
 
+void BPTree::clear() {
+    if (!isinited_) {
+        std::cerr << "clear error:B+树未初始化" << std::endl;
+        return;
+    }
+    root.reset();
+    root = std::make_shared<BPNode>();
+
+}
+
 
 //辅助查询函数
 std::vector<uint64_t> BPTree::getAllKeys() const {

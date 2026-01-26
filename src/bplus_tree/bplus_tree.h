@@ -61,6 +61,7 @@ public:
 	void remove(uint64_t key);
 	PhyAddr search(uint64_t key) const;
 	std::vector<std::pair<uint64_t, PhyAddr>> rangeSearch(uint64_t startKey, uint64_t endKey) const;
+	void clear();
 	/*// 临时开放root访问（调试用）
 	std::shared_ptr<BPNode> getRoot() const {
 		return root;
