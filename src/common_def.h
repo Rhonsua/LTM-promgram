@@ -1,6 +1,7 @@
 #ifdef __COMMON_DEF_H__
 #define __COMMON_DEF_H__
 
+<<<<<<< HEAD
 
 // 引入基础依赖头文件
 #include <cstdint>   // 固定宽度整数类型 uint64_t
@@ -115,5 +116,7 @@ inline bool isNodeMaxKey(const size_t key_num) {
 }
 
 
+=======
+>>>>>>> 6a019ed155bc7a146a7af6b4988f053fc5723850
 #endif // COMMON_DEF_H__
 
