@@ -33,20 +33,20 @@ std::shared_ptr<BPNode> BPTree::findLeafNode(uint64_t key) const{
     return currNode;
 }
 //insert函数实现
-void BPTree::insert(uint64_t key, const PhyAddr& addr) {
+bool BPTree::insert(uint64_t key, const PhyAddr& addr) {
     if (!addr.isValid()) {
         std::cerr << "非法地址，插入失败！" << std::endl;
-        return;
+        return false;
     }
     auto leafNode = findLeafNode(key);
-    if (!leafNode) return;
+    if (!leafNode) return false;
     //二分查找插入位置
     auto it = std::lower_bound(leafNode->keys.begin(), leafNode->keys.end(), key);
     auto idx = it - leafNode->keys.begin();//计算索引位置
     //检查key是否存在
     if (idx < leafNode->keys.size() && leafNode->keys[idx] == key) {
         leafNode->values[idx] = addr;// 已存在直接覆盖
-        return;
+        return false;
     }
     //插入key和对应地址
     leafNode->keys.insert(it, key);
@@ -55,6 +55,7 @@ void BPTree::insert(uint64_t key, const PhyAddr& addr) {
     if (leafNode->keys.size() > BP_ORDER - 1) {
         SplitLeafNode(leafNode);
     }
+    return true;
 }
 // 分裂子叶节点
 void BPTree::SplitLeafNode(std::shared_ptr<BPNode> leafNode) {

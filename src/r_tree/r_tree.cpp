@@ -1,256 +1,98 @@
 #include "r_tree.h"
+#include <iostream>
 #include <queue>
-#include <iomanip>
+#include <limits>
 
-template<uint32_t DIM>
-void RTree<DIM>::init() {
+void RTree::init() {
     if (isinited_) {
-        std::cerr << "[RTree] å·²ç»åˆå§‹åŒ–" << std::endl;
+        std::cerr << "[RTree] ÒÑ¾­³õÊ¼»¯" << std::endl;
         return;
     }
-    
-    root = std::make_shared<RTreeNode<DIM>>();
+
+    if (dimension == 0) {
+        std::cerr << "[RTree] ´íÎó£ºÎ¬¶È²»ÄÜÎª0" << std::endl;
+        return;
+    }
+
+    root = std::make_shared<RTreeNode>(dimension);
     root->is_leaf = true;
     isinited_ = true;
-    std::cout << "[RTree] åˆå§‹åŒ–æˆåŠŸï¼Œç»´åº¦: " << DIM 
-              << "ï¼Œé˜¶æ•°: " << order << std::endl;
+    std::cout << "[RTree] ³õÊ¼»¯³É¹¦£¬Î¬¶È: " << dimension
+        << "£¬½×Êı: " << order << std::endl;
 }
 
-template<uint32_t DIM>
-std::shared_ptr<RTreeNode<DIM>> RTree<DIM>::chooseLeaf(
-    const std::shared_ptr<RTreeNode<DIM>>& node, 
-    const SpatialEntry<DIM>& entry) const {
-    
-    // å¦‚æœå½“å‰èŠ‚ç‚¹æ˜¯å¶å­èŠ‚ç‚¹ï¼Œç›´æ¥è¿”å›
-    if (node->is_leaf) {
-        return node;
-    }
-    
-    // é€‰æ‹©éœ€è¦æœ€å°‘æ‰©å±•é¢ç§¯çš„å­èŠ‚ç‚¹
-    std::shared_ptr<RTreeNode<DIM>> best_child = nullptr;
-    double min_expansion = std::numeric_limits<double>::max();
-    
-    for (size_t i = 0; i < node->children.size(); ++i) {
-        if (i < node->mbrs.size()) {
-            double expansion = node->mbrs[i].getExpansionVolume(entry.mbr);
-            
-            // å¦‚æœæ‰©å±•ä½“ç§¯ç›¸åŒï¼Œé€‰æ‹©å½“å‰ä½“ç§¯è¾ƒå°çš„
-            if (expansion < min_expansion || 
-                (std::abs(expansion - min_expansion) < 1e-10 && 
-                 (!best_child || node->mbrs[i].getVolume() < 
-                  node->mbrs[std::distance(node->children.begin(), 
-                    std::find(node->children.begin(), node->children.end(), best_child))].getVolume()))) {
-                min_expansion = expansion;
-                best_child = node->children[i];
-            }
-        }
-    }
-    
-    // å¦‚æœæ²¡æœ‰æ‰¾åˆ°åˆé€‚çš„å­èŠ‚ç‚¹ï¼Œé€‰æ‹©ç¬¬ä¸€ä¸ª
-    if (!best_child && !node->children.empty()) {
-        best_child = node->children[0];
-    }
-    
-    // é€’å½’å‘ä¸‹é€‰æ‹©
-    if (best_child) {
-        return chooseLeaf(best_child, entry);
-    }
-    
-    return node;
-}
-
-template<uint32_t DIM>
-std::pair<std::shared_ptr<RTreeNode<DIM>>, std::shared_ptr<RTreeNode<DIM>>> 
-RTree<DIM>::splitNode(const std::shared_ptr<RTreeNode<DIM>>& node) {
-    auto new_node1 = std::make_shared<RTreeNode<DIM>>();
-    auto new_node2 = std::make_shared<RTreeNode<DIM>>();
-    
-    new_node1->is_leaf = node->is_leaf;
-    new_node2->is_leaf = node->is_leaf;
-    
-    // ç®€å•çº¿æ€§åˆ†è£‚ï¼šå°†èŠ‚ç‚¹ä¸­çš„é¡¹å¹³å‡åˆ†é…åˆ°ä¸¤ä¸ªæ–°èŠ‚ç‚¹
-    size_t total_items = node->is_leaf ? node->entries.size() : node->children.size();
-    size_t split_index = total_items / 2;
-    
-    if (node->is_leaf) {
-        // åˆ†è£‚å¶å­èŠ‚ç‚¹
-        for (size_t i = 0; i < split_index; ++i) {
-            new_node1->entries.push_back(node->entries[i]);
-        }
-        for (size_t i = split_index; i < total_items; ++i) {
-            new_node2->entries.push_back(node->entries[i]);
-        }
-        
-        new_node1->updateMBR();
-        new_node2->updateMBR();
-    } else {
-        // åˆ†è£‚éå¶å­èŠ‚ç‚¹
-        for (size_t i = 0; i < split_index; ++i) {
-            new_node1->children.push_back(node->children[i]);
-            node->children[i]->parent = new_node1;
-        }
-        for (size_t i = split_index; i < total_items; ++i) {
-            new_node2->children.push_back(node->children[i]);
-            node->children[i]->parent = new_node2;
-        }
-        
-        new_node1->updateMBR();
-        new_node2->updateMBR();
-    }
-    
-    return {new_node1, new_node2};
-}
-
-template<uint32_t DIM>
-void RTree<DIM>::adjustTree(const std::shared_ptr<RTreeNode<DIM>>& node) {
-    auto current = node;
-    
-    while (current) {
-        // æ›´æ–°å½“å‰èŠ‚ç‚¹çš„MBR
-        current->updateMBR();
-        
-        // å¦‚æœèŠ‚ç‚¹æº¢å‡ºï¼Œéœ€è¦åˆ†è£‚
-        if (current->isFull()) {
-            auto [new_node1, new_node2] = splitNode(current);
-            
-            auto parent = current->parent.lock();
-            if (!parent) {
-                // åˆ›å»ºæ–°çš„æ ¹èŠ‚ç‚¹
-                root = std::make_shared<RTreeNode<DIM>>();
-                root->is_leaf = false;
-                root->children.push_back(new_node1);
-                root->children.push_back(new_node2);
-                new_node1->parent = root;
-                new_node2->parent = root;
-                root->updateMBR();
-                break;
-            } else {
-                // ä»çˆ¶èŠ‚ç‚¹ä¸­ç§»é™¤å½“å‰èŠ‚ç‚¹ï¼Œæ·»åŠ ä¸¤ä¸ªæ–°èŠ‚ç‚¹
-                auto it = std::find(parent->children.begin(), parent->children.end(), current);
-                if (it != parent->children.end()) {
-                    parent->children.erase(it);
-                }
-                
-                parent->children.push_back(new_node1);
-                parent->children.push_back(new_node2);
-                new_node1->parent = parent;
-                new_node2->parent = parent;
-                
-                current = parent;
-            }
-        } else {
-            auto parent = current->parent.lock();
-            if (parent) {
-                current = parent;
-            } else {
-                break;
-            }
-        }
-    }
-}
-
-template<uint32_t DIM>
-bool RTree<DIM>::insert(const SpatialEntry<DIM>& entry) {
+bool RTree::insert(const SpatialEntry& entry) {
     if (!isinited_) {
-        std::cerr << "[RTree] é”™è¯¯ï¼šRæ ‘æœªåˆå§‹åŒ–" << std::endl;
+        std::cerr << "[RTree] ´íÎó£ºRÊ÷Î´³õÊ¼»¯" << std::endl;
         return false;
     }
-    
+
+    // ¼ì²éÎ¬¶ÈÊÇ·ñÆ¥Åä
+    if (entry.getDim() != dimension) {
+        std::cerr << "[RTree] ´íÎó£ºÊı¾İÎ¬¶È(" << entry.getDim()
+            << ")ÓëRÊ÷Î¬¶È(" << dimension << ")²»Æ¥Åä" << std::endl;
+        return false;
+    }
+
     if (!entry.isValid()) {
-        std::cerr << "[RTree] é”™è¯¯ï¼šæ— æ•ˆçš„ç©ºé—´æ¡ç›®" << std::endl;
+        std::cerr << "[RTree] ´íÎó£ºÎŞĞ§µÄ¿Õ¼äÌõÄ¿" << std::endl;
         return false;
     }
-    
-    // é€‰æ‹©å¶å­èŠ‚ç‚¹è¿›è¡Œæ’å…¥
-    auto leaf = chooseLeaf(root, entry);
-    
-    // æ’å…¥æ¡ç›®
-    leaf->entries.push_back(entry);
-    leaf->updateMBR();
-    
-    // è°ƒæ•´æ ‘ç»“æ„
-    adjustTree(leaf);
-    
-    return true;
+
+    // ¼ò»¯°æ±¾£ºÖ±½Ó²åÈëµ½¸ù½Úµã
+    // ×¢Òâ£ºÕâÖ»ÊÇÒ»¸ö¼ò»¯ÊµÏÖ£¬Êµ¼ÊRÊ÷ĞèÒª¸ü¸´ÔÓµÄ²åÈëÂß¼­
+    if (root->is_leaf) {
+        // Èç¹ûÊÇÒ¶×Ó½Úµã£¬Ö±½Ó²åÈë
+        root->entries.push_back(entry);
+        root->updateMBR();
+
+        // Èç¹û½ÚµãÂúÁË£¬¼òµ¥´òÓ¡ÌáÊ¾£¨¼ò»¯°æ±¾£©
+        if (root->isFull(order)) {
+            std::cout << "[RTree] ½ÚµãÒÑÂú£¬ĞèÒª·ÖÁÑ£¨¼ò»¯°æ±¾£©" << std::endl;
+        }
+
+        return true;
+    }
+
+    // Èç¹ûÊÇÄÚ²¿½Úµã£¬¼ò»¯´¦Àí£¨Êµ¼ÊĞèÒªµİ¹é²åÈë£©
+    std::cerr << "[RTree] ¼ò»¯°æ±¾Ôİ²»Ö§³ÖÄÚ²¿½Úµã²åÈë" << std::endl;
+    return false;
 }
 
-template<uint32_t DIM>
-void RTree<DIM>::searchRecursive(const std::shared_ptr<RTreeNode<DIM>>& node,
-                                const MBR<DIM>& query_mbr,
-                                std::vector<SpatialEntry<DIM>>& results) const {
-    if (!node) return;
-    
-    if (node->is_leaf) {
-        // æ£€æŸ¥å¶å­èŠ‚ç‚¹ä¸­çš„æ¯ä¸ªæ¡ç›®
-        for (const auto& entry : node->entries) {
-            if (entry.mbr.intersects(query_mbr)) {
+std::vector<SpatialEntry> RTree::search(const MBR& query_mbr) const {
+    std::vector<SpatialEntry> results;
+
+    if (!isinited_) {
+        std::cerr << "[RTree] ´íÎó£ºRÊ÷Î´³õÊ¼»¯" << std::endl;
+        return results;
+    }
+
+    // ¼ì²éÎ¬¶ÈÊÇ·ñÆ¥Åä
+    if (query_mbr.getDim() != dimension) {
+        std::cerr << "[RTree] ´íÎó£º²éÑ¯Î¬¶È(" << query_mbr.getDim()
+            << ")ÓëRÊ÷Î¬¶È(" << dimension << ")²»Æ¥Åä" << std::endl;
+        return results;
+    }
+
+    if (!query_mbr.isValid()) {
+        std::cerr << "[RTree] ´íÎó£ºÎŞĞ§µÄ²éÑ¯MBR" << std::endl;
+        return results;
+    }
+
+    // ¼ò»¯°æ±¾£ºÖ»ÔÚ¸ù½ÚµãÖĞËÑË÷
+    if (root->is_leaf) {
+        for (const auto& entry : root->entries) {
+            if (query_mbr.intersects(entry.mbr)) {
                 results.push_back(entry);
             }
         }
-    } else {
-        // æ£€æŸ¥éå¶å­èŠ‚ç‚¹ä¸­çš„æ¯ä¸ªå­èŠ‚ç‚¹
-        for (size_t i = 0; i < node->children.size(); ++i) {
-            if (i < node->mbrs.size() && node->mbrs[i].intersects(query_mbr)) {
-                searchRecursive(node->children[i], query_mbr, results);
-            }
-        }
     }
-}
 
-template<uint32_t DIM>
-std::vector<SpatialEntry<DIM>> RTree<DIM>::search(const MBR<DIM>& query_mbr) const {
-    std::vector<SpatialEntry<DIM>> results;
-    
-    if (!isinited_) {
-        std::cerr << "[RTree] é”™è¯¯ï¼šRæ ‘æœªåˆå§‹åŒ–" << std::endl;
-        return results;
-    }
-    
-    if (!query_mbr.isValid()) {
-        std::cerr << "[RTree] é”™è¯¯ï¼šæ— æ•ˆçš„æŸ¥è¯¢MBR" << std::endl;
-        return results;
-    }
-    
-    searchRecursive(root, query_mbr, results);
     return results;
 }
 
-template<uint32_t DIM>
-void RTree<DIM>::clear() {
+void RTree::clear() {
     root.reset();
     isinited_ = false;
+    std::cout << "[RTree] ÒÑÇå¿Õ" << std::endl;
 }
-
-template<uint32_t DIM>
-void RTree<DIM>::printTree() const {
-    if (!root) {
-        std::cout << "[RTree] æ ‘ä¸ºç©º" << std::endl;
-        return;
-    }
-    
-    std::queue<std::pair<std::shared_ptr<RTreeNode<DIM>>, int>> q;
-    q.push({root, 0});
-    
-    while (!q.empty()) {
-        auto [node, level] = q.front();
-        q.pop();
-        
-        std::cout << std::string(level * 2, ' ') 
-                  << "Level " << level 
-                  << (node->is_leaf ? " [Leaf]" : " [Internal]")
-                  << " Items: " 
-                  << (node->is_leaf ? node->entries.size() : node->children.size())
-                  << std::endl;
-        
-        if (!node->is_leaf) {
-            for (const auto& child : node->children) {
-                q.push({child, level + 1});
-            }
-        }
-    }
-}
-
-// æ˜¾å¼å®ä¾‹åŒ–æ¨¡æ¿
-template class RTree<2>;
-template class RTree<3>;
-template class RTree<4>;

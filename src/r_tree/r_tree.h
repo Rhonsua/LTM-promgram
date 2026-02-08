@@ -8,50 +8,53 @@
 #include<memory>
 #include<vector>
 #include<cmath>
+#include"common_def.h"
 
-constexpr uint32_t R_TREE_ORDER = 5;  // B+æ ‘é˜¶æ•°
-constexpr uint64_t INVALID_ID = 0;
-constexpr uint64_t INVALID_BLOCK = 0;
+constexpr uint32_t DEFAULT_R_TREE_ORDER = 5;  // Ä¬ÈÏ½×Êı
 
-// å¤ç”¨B+æ ‘ç‰©ç†ç»“æ„åœ°å€
-struct PhyAddr {
-    uint64_t block_id = 0;    // å—id
-    uint32_t offset = 0;      // å—å†…åç§»é‡
-    
-    bool isValid() const {
-        return block_id != INVALID_BLOCK && offset > 0;
-    }
-};
 
-template<uint32_t DIM> 
+// ¶¯Ì¬Î¬¶ÈMBR£¨ÒÆ³ıÁËÄ£°å£©
 struct MBR {
     std::vector<double> min_vals;
     std::vector<double> max_vals;
+    uint32_t dimension;  // Î¬¶ÈĞÅÏ¢
 
-    MBR() : min_vals(DIM, 0.0), max_vals(DIM, 0.0) {}
-    
-    MBR(const std::vector<double>& min, const std::vector<double>& max) 
-        : min_vals(min), max_vals(max) {
-        if (min_vals.size() != DIM) min_vals.resize(DIM, 0.0);
-        if (max_vals.size() != DIM) max_vals.resize(DIM, 0.0);
+    // ¹¹Ôìº¯Êı£º´«ÈëÎ¬¶È
+    MBR(uint32_t dim = 0) : dimension(dim) {
+        if (dim > 0) {
+            min_vals.resize(dim, 0.0);
+            max_vals.resize(dim, 0.0);
+        }
     }
 
-    // æ£€æŸ¥MBRæ˜¯å¦æœ‰æ•ˆ
+    // ´ÓÏÖÓĞÊı¾İ³õÊ¼»¯
+    MBR(const std::vector<double>& min, const std::vector<double>& max)
+        : min_vals(min), max_vals(max), dimension(min.size()) {
+        if (min_vals.size() != max_vals.size()) {
+            dimension = 0;  // Î¬¶È²»Æ¥Åä£¬ÉèÎª0±íÊ¾ÎŞĞ§
+        }
+    }
+
+    // ¼ì²éMBRÊÇ·ñÓĞĞ§
     bool isValid() const {
-        if (min_vals.size() != DIM || max_vals.size() != DIM) 
+        if (dimension == 0) return false;
+        if (min_vals.size() != dimension || max_vals.size() != dimension)
             return false;
-        for (uint32_t i = 0; i < DIM; ++i) {
-            if (min_vals[i] > max_vals[i]) 
+        for (uint32_t i = 0; i < dimension; ++i) {
+            if (min_vals[i] > max_vals[i])
                 return false;
         }
         return true;
     }
 
-    // è®¡ç®—ä½“ç§¯/é¢ç§¯
+    // »ñÈ¡Î¬¶È
+    uint32_t getDim() const { return dimension; }
+
+    // ¼ÆËãÌå»ı/Ãæ»ı
     double getVolume() const {
         if (!isValid()) return 0.0;
         double volume = 1.0;
-        for (uint32_t i = 0; i < DIM; ++i) {
+        for (uint32_t i = 0; i < dimension; ++i) {
             double length = max_vals[i] - min_vals[i];
             if (length < 0) return 0.0;
             volume *= length;
@@ -59,43 +62,52 @@ struct MBR {
         return volume;
     }
 
-    // åˆå¹¶ä¸¤ä¸ªMBR
+    // ºÏ²¢Á½¸öMBR
     MBR merge(const MBR& other) const {
-        MBR result;
-        result.min_vals.resize(DIM);
-        result.max_vals.resize(DIM);
-        
-        for (uint32_t i = 0; i < DIM; ++i) {
+        if (dimension != other.dimension) {
+            return MBR(0);  // Î¬¶È²»Æ¥Åä£¬·µ»Ø¿ÕMBR
+        }
+
+        MBR result(dimension);
+        for (uint32_t i = 0; i < dimension; ++i) {
             result.min_vals[i] = std::min(min_vals[i], other.min_vals[i]);
             result.max_vals[i] = std::max(max_vals[i], other.max_vals[i]);
         }
         return result;
     }
 
-    // è®¡ç®—ä½“ç§¯å¢é‡
+    // ¼ÆËãÌå»ıÔöÁ¿
     double getExpansionVolume(const MBR& other) const {
+        if (dimension != other.dimension) return 0.0;
+
         MBR merged = this->merge(other);
         double current_volume = this->getVolume();
         double merged_volume = merged.getVolume();
         return merged_volume - current_volume;
     }
 
-    // æ£€æŸ¥æ˜¯å¦åŒ…å«å¦ä¸€ä¸ªMBR
+    // ¼ì²éÊÇ·ñ°üº¬ÁíÒ»¸öMBR
     bool contains(const MBR& other) const {
-        if (!isValid() || !other.isValid()) 
+        if (!isValid() || !other.isValid())
             return false;
-        for (uint32_t i = 0; i < DIM; ++i) {
+        if (dimension != other.dimension)
+            return false;
+
+        for (uint32_t i = 0; i < dimension; ++i) {
             if (min_vals[i] > other.min_vals[i] || max_vals[i] < other.max_vals[i])
                 return false;
         }
         return true;
     }
 
-    // æ£€æŸ¥æ˜¯å¦ä¸å¦ä¸€ä¸ªMBRç›¸äº¤
+    // ¼ì²éÊÇ·ñÓëÁíÒ»¸öMBRÏà½»
     bool intersects(const MBR& other) const {
-        if (!isValid() || !other.isValid()) 
+        if (!isValid() || !other.isValid())
             return false;
-        for (uint32_t i = 0; i < DIM; ++i) {
+        if (dimension != other.dimension)
+            return false;
+
+        for (uint32_t i = 0; i < dimension; ++i) {
             if (min_vals[i] > other.max_vals[i] || max_vals[i] < other.min_vals[i])
                 return false;
         }
@@ -103,30 +115,32 @@ struct MBR {
     }
 };
 
-template<uint32_t DIM>
 struct SpatialEntry {
     uint64_t id = INVALID_ID;
-    MBR<DIM> mbr;
+    MBR mbr;  // Ê¹ÓÃ·ÇÄ£°åµÄMBR
     PhyAddr phy_addr;
 
     bool isValid() const {
         return id != INVALID_ID && mbr.isValid() && phy_addr.isValid();
     }
+
+    // »ñÈ¡Î¬¶È
+    uint32_t getDim() const { return mbr.getDim(); }
 };
 
-template<uint32_t DIM> 
 struct RTreeNode {
     bool is_leaf = true;
-    std::weak_ptr<RTreeNode<DIM>> parent;
-    std::vector<MBR<DIM>> mbrs;
-    std::vector<SpatialEntry<DIM>> entries;
-    std::vector<std::shared_ptr<RTreeNode<DIM>>> children;
+    std::weak_ptr<RTreeNode> parent;
+    std::vector<MBR> mbrs;
+    std::vector<SpatialEntry> entries;
+    std::vector<std::shared_ptr<RTreeNode>> children;
+    uint32_t dimension;  // ½ÚµãÎ¬¶È
 
-    RTreeNode() : is_leaf(true) {}
+    RTreeNode(uint32_t dim = 0) : dimension(dim) {}
 
-    bool isFull() const {
-        return is_leaf ? entries.size() >= R_TREE_ORDER 
-                       : children.size() >= R_TREE_ORDER;
+    bool isFull(uint32_t order) const {
+        return is_leaf ? entries.size() >= order
+            : children.size() >= order;
     }
 
     bool isEmpty() const {
@@ -140,19 +154,20 @@ struct RTreeNode {
         parent.reset();
     }
 
-    // æ›´æ–°èŠ‚ç‚¹çš„MBRï¼ˆæ ¹æ®å­èŠ‚ç‚¹æˆ–æ¡ç›®ï¼‰
+    // ¸üĞÂ½ÚµãµÄMBR
     void updateMBR() {
         if (is_leaf) {
             mbrs.clear();
             for (const auto& entry : entries) {
                 mbrs.push_back(entry.mbr);
             }
-        } else {
+        }
+        else {
             mbrs.clear();
             for (const auto& child : children) {
                 if (!child->mbrs.empty()) {
-                    // å­èŠ‚ç‚¹çš„MBRæ˜¯å…¶æ‰€æœ‰MBRçš„åˆå¹¶
-                    MBR<DIM> child_mbr = child->mbrs[0];
+                    // ×Ó½ÚµãµÄMBRÊÇÆäËùÓĞMBRµÄºÏ²¢
+                    MBR child_mbr = child->mbrs[0];
                     for (size_t i = 1; i < child->mbrs.size(); ++i) {
                         child_mbr = child_mbr.merge(child->mbrs[i]);
                     }
@@ -161,39 +176,38 @@ struct RTreeNode {
             }
         }
     }
+
+    // »ñÈ¡Î¬¶È
+    uint32_t getDim() const { return dimension; }
 };
 
-template<uint32_t DIM> 
+// RÊ÷Àà£¨·ÇÄ£°å£¬Ö§³ÖÔËĞĞÊ±Î¬¶È£©
 class RTree {
 private:
-    std::shared_ptr<RTreeNode<DIM>> root;
-    const uint32_t order;
+    std::shared_ptr<RTreeNode> root;
+    uint32_t order;
+    uint32_t dimension;  // ÔËĞĞÊ±È·¶¨µÄÎ¬¶È
     bool isinited_ = false;
-    
-    // ç§æœ‰è¾…åŠ©æ–¹æ³•
-    std::shared_ptr<RTreeNode<DIM>> chooseLeaf(const std::shared_ptr<RTreeNode<DIM>>& node, 
-                                               const SpatialEntry<DIM>& entry) const;
-    void adjustTree(const std::shared_ptr<RTreeNode<DIM>>& node);
-    std::pair<std::shared_ptr<RTreeNode<DIM>>, std::shared_ptr<RTreeNode<DIM>>> 
-        splitNode(const std::shared_ptr<RTreeNode<DIM>>& node);
-    void searchRecursive(const std::shared_ptr<RTreeNode<DIM>>& node, 
-                        const MBR<DIM>& query_mbr,
-                        std::vector<SpatialEntry<DIM>>& results) const;
 
 public:
-    explicit RTree(uint32_t treeOrder = R_TREE_ORDER) : order(treeOrder) {}
-    
+    // ¹¹Ôìº¯Êı£ºÓÃ»§¿ÉÒÔ´«ÈëÎ¬¶ÈºÍ½×Êı
+    explicit RTree(uint32_t dim = 2, uint32_t treeOrder = DEFAULT_R_TREE_ORDER)
+        : dimension(dim), order(treeOrder) {
+        std::cout << "´´½¨RÊ÷£¬Î¬¶È£º" << dimension << "£¬½×Êı£º" << order << std::endl;
+    }
+
     void init();
     bool isinited() const { return isinited_; }
-    bool insert(const SpatialEntry<DIM>& entry);
-    std::vector<SpatialEntry<DIM>> search(const MBR<DIM>& query_mbr) const;
+
+    // »ñÈ¡Î¬¶È
+    uint32_t getDimension() const { return dimension; }
+
+    // »ñÈ¡½×Êı
+    uint32_t getOrder() const { return order; }
+
+    bool insert(const SpatialEntry& entry);
+    std::vector<SpatialEntry> search(const MBR& query_mbr) const;
     void clear();
-    
-    // è·å–æ ¹èŠ‚ç‚¹ï¼ˆç”¨äºæµ‹è¯•ï¼‰
-    std::shared_ptr<RTreeNode<DIM>> getRoot() const { return root; }
-    
-    // æ‰“å°æ ‘ç»“æ„ï¼ˆç”¨äºè°ƒè¯•ï¼‰
-    void printTree() const;
 };
 
-#endif // __R_TREE_H__
+#endif // __R_TREE_H__#pragma once

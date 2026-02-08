@@ -7,20 +7,12 @@
 #include<cstdint>  //提供精确位数类型数 uint32_t uint64_t等
 #include<memory>  //提供智能指针 std::shared_ptr,std::weak_ptr
 #include<vector>
-
+#include"common_def.h"
 //全局常量
 constexpr uint32_t BP_ORDER = 5;//B+树阶数
-constexpr uint64_t INVALID_KEY = 0;//标记非法key
-constexpr uint32_t INVALID_BLOCK = 0;//标记非法块
 
-//物理地址结构体
-struct PhyAddr{
-	uint64_t block_id=0;//块id
-	uint32_t offset = 0;//块内偏移量
-	bool isValid() const {
-		return block_id != INVALID_BLOCK && offset > 0;
-	}//判断地址是否有效
-};
+
+
 //节点结构体
 struct BPNode {
 	bool is_leaf = true;
@@ -57,7 +49,7 @@ public:
 	explicit BPTree(uint32_t treeOrder = BP_ORDER); 
 	void init();
 	bool isinited() const;
-	void insert(uint64_t key,const PhyAddr&addr);
+	bool insert(uint64_t key,const PhyAddr&addr);
 	void remove(uint64_t key);
 	PhyAddr search(uint64_t key) const;
 	std::vector<std::pair<uint64_t, PhyAddr>> rangeSearch(uint64_t startKey, uint64_t endKey) const;
