@@ -1,0 +1,55 @@
+#include "r_tree.h"
+#include <iostream>
+#include <random>
+
+int main() {
+    // 测试2维R树
+    RTree<2> rtree2d;
+    rtree2d.init();
+    
+    // 插入一些测试数据
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(0.0, 100.0);
+    
+    for (int i = 1; i <= 20; ++i) {
+        SpatialEntry<2> entry;
+        entry.id = i;
+        
+        // 生成随机矩形
+        double x1 = dis(gen);
+        double y1 = dis(gen);
+        double x2 = x1 + dis(gen) * 0.1;
+        double y2 = y1 + dis(gen) * 0.1;
+        
+        entry.mbr = MBR<2>({std::min(x1, x2), std::min(y1, y2)},
+                          {std::max(x1, x2), std::max(y1, y2)});
+        
+        entry.phy_addr.block_id = i * 100;
+        entry.phy_addr.offset = i * 10;
+        
+        if (rtree2d.insert(entry)) {
+            std::cout << "插入条目 " << i << " 成功" << std::endl;
+        }
+    }
+    
+    // 执行查询
+    MBR<2> query_mbr({30.0, 30.0}, {70.0, 70.0});
+    auto results = rtree2d.search(query_mbr);
+    
+    std::cout << "\n查询结果（在区域 [30,30]-[70,70] 中的条目）：" << std::endl;
+    std::cout << "找到 " << results.size() << " 个条目" << std::endl;
+    
+    for (const auto& result : results) {
+        std::cout << "条目 ID: " << result.id 
+                  << ", MBR: [" << result.mbr.min_vals[0] << "," << result.mbr.min_vals[1] 
+                  << "]-[" << result.mbr.max_vals[0] << "," << result.mbr.max_vals[1] << "]" 
+                  << std::endl;
+    }
+    
+    // 打印树结构
+    std::cout << "\nR树结构：" << std::endl;
+    rtree2d.printTree();
+    
+    return 0;
+}
