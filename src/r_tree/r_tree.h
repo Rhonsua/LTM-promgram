@@ -1,19 +1,29 @@
 #ifndef __R_TREE_H__
 #define __R_TREE_H__
 
-#include<iostream>
-#include<algorithm>
-#include<utility>
-#include<cstdint>
-#include<memory>
-#include<vector>
-#include<cmath>
-#include"common_def.h"
+#include <iostream>
+#include <algorithm>
+#include <utility>
+#include <cstdint>
+#include <memory>
+#include <vector>
+#include <cmath>
 
 constexpr uint32_t DEFAULT_R_TREE_ORDER = 5;  // 默认阶数
+constexpr uint64_t INVALID_ID = 0;
+constexpr uint64_t INVALID_BLOCK = 0;
 
+// 物理地址
+struct PhyAddr {
+    uint64_t block_id = 0;    // 块id
+    uint32_t offset = 0;      // 块内偏移量
 
-// 动态维度MBR（移除了模板）
+    bool isValid() const {
+        return block_id != INVALID_BLOCK && offset > 0;
+    }
+};
+
+// 动态维度MBR
 struct MBR {
     std::vector<double> min_vals;
     std::vector<double> max_vals;
@@ -115,10 +125,15 @@ struct MBR {
     }
 };
 
+// 空间数据项
 struct SpatialEntry {
     uint64_t id = INVALID_ID;
     MBR mbr;  // 使用非模板的MBR
     PhyAddr phy_addr;
+
+    // 构造函数
+    SpatialEntry() = default;
+    SpatialEntry(uint32_t dim) : mbr(dim) {}
 
     bool isValid() const {
         return id != INVALID_ID && mbr.isValid() && phy_addr.isValid();
@@ -128,6 +143,7 @@ struct SpatialEntry {
     uint32_t getDim() const { return mbr.getDim(); }
 };
 
+// R树节点
 struct RTreeNode {
     bool is_leaf = true;
     std::weak_ptr<RTreeNode> parent;
@@ -147,18 +163,22 @@ struct RTreeNode {
         return is_leaf ? entries.empty() : children.empty();
     }
 
-    void clear() {
+    bool clear() {
         mbrs.clear();
         entries.clear();
         children.clear();
         parent.reset();
+        return true;
     }
 
     // 更新节点的MBR
-    void updateMBR() {
+    bool updateMBR() {
         if (is_leaf) {
             mbrs.clear();
             for (const auto& entry : entries) {
+                if (entry.getDim() != dimension) {
+                    return false;  // 维度不匹配
+                }
                 mbrs.push_back(entry.mbr);
             }
         }
@@ -175,6 +195,7 @@ struct RTreeNode {
                 }
             }
         }
+        return true;
     }
 
     // 获取维度
@@ -189,25 +210,52 @@ private:
     uint32_t dimension;  // 运行时确定的维度
     bool isinited_ = false;
 
+    // 私有辅助函数
+    bool chooseLeaf(std::shared_ptr<RTreeNode> node,
+        const SpatialEntry& entry,
+        std::shared_ptr<RTreeNode>& result) const;
+
+    bool adjustTree(std::shared_ptr<RTreeNode> node);
+
+    bool splitNode(std::shared_ptr<RTreeNode> node,
+        std::shared_ptr<RTreeNode>& new_node1,
+        std::shared_ptr<RTreeNode>& new_node2);
+
+    bool searchRecursive(std::shared_ptr<RTreeNode> node,
+        const MBR& query_mbr,
+        std::vector<SpatialEntry>& results) const;
+
 public:
     // 构造函数：用户可以传入维度和阶数
     explicit RTree(uint32_t dim = 2, uint32_t treeOrder = DEFAULT_R_TREE_ORDER)
         : dimension(dim), order(treeOrder) {
-        std::cout << "创建R树，维度：" << dimension << "，阶数：" << order << std::endl;
+        std::cout << "[RTree] 创建R树，维度：" << dimension << "，阶数：" << order << std::endl;
     }
 
-    void init();
+    // 初始化
+    bool init();
+
+    // 状态查询
     bool isinited() const { return isinited_; }
 
-    // 获取维度
+    // 获取信息
     uint32_t getDimension() const { return dimension; }
-
-    // 获取阶数
     uint32_t getOrder() const { return order; }
 
+    // 数据操作
     bool insert(const SpatialEntry& entry);
-    std::vector<SpatialEntry> search(const MBR& query_mbr) const;
-    void clear();
+    bool search(const MBR& query_mbr, std::vector<SpatialEntry>& results) const;
+    bool rangeQuery(const MBR& query_mbr, std::vector<SpatialEntry>& results) const;
+    bool pointQuery(const std::vector<double>& point, std::vector<SpatialEntry>& results) const;
+
+    // 树管理
+    bool clear();
+    bool validate() const;
+    bool getStatistics(uint32_t& leaf_count, uint32_t& internal_count,
+        uint32_t& total_entries, uint32_t& tree_height) const;
+
+    // 调试功能
+    bool printTree(std::ostream& os = std::cout) const;
 };
 
 #endif // __R_TREE_H__#pragma once
