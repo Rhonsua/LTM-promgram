@@ -8,20 +8,9 @@
 #include <memory>
 #include <vector>
 #include <cmath>
+#include"common_def.h"
 
-constexpr uint32_t DEFAULT_R_TREE_ORDER = 5;  // 默认阶数
-constexpr uint64_t INVALID_ID = 0;
-constexpr uint64_t INVALID_BLOCK = 0;
-
-// 物理地址
-struct PhyAddr {
-    uint64_t block_id = 0;    // 块id
-    uint32_t offset = 0;      // 块内偏移量
-
-    bool isValid() const {
-        return block_id != INVALID_BLOCK && offset > 0;
-    }
-};
+const uint32_t DEFAULT_R_TREE_ORDER = 5;
 
 // 动态维度MBR
 struct MBR {
