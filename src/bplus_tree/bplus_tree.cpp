@@ -288,7 +288,8 @@ void BPTree::handleLeafUnderflow(std::shared_ptr<BPNode> leafNode) {
         parentNode->keys.erase(parentNode->keys.begin() + nodeIdx - 1);
         parentNode->children.erase(parentNode->children.begin() + nodeIdx);
         LOG_INFO << "与左兄弟合并成功" << std::endl;
-    } else {
+    }
+    else {
         auto rightSibling = parentNode->children[nodeIdx + 1];
         mergeLeafNodes(leafNode, rightSibling);
         parentNode->keys.erase(parentNode->keys.begin() + nodeIdx);
@@ -362,7 +363,8 @@ void BPTree::handleInternalUnderflow(std::shared_ptr<BPNode> internalNode, int n
         mergeInternalNodes(parentNode, nodeIdx - 1, parentNode->keys[nodeIdx - 1]);
         parentNode->keys.erase(parentNode->keys.begin() + nodeIdx - 1);
         parentNode->children.erase(parentNode->children.begin() + nodeIdx);
-    } else {
+    }
+    else {
         mergeInternalNodes(parentNode, nodeIdx, parentNode->keys[nodeIdx]);
         parentNode->keys.erase(parentNode->keys.begin() + nodeIdx);
         parentNode->children.erase(parentNode->children.begin() + nodeIdx + 1);

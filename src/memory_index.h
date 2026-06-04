@@ -382,3 +382,285 @@ public:
 };
 
 #endif // __MEMORY_INDEX_H__
+#ifndef __MEMORY_INDEX_H__
+#define __MEMORY_INDEX_H__
+
+#include "index_interface.h"
+#include "r_tree.h"
+#include "bplus_tree.h"
+#include <iostream>
+#include <iomanip>          // 注意：修正了原来的拼写错误 iomanip -> iomanip
+#include <mutex>
+#include <unordered_map>
+
+class MemoryIndex {
+private:
+    std::unique_ptr<BPTree> btree_index;
+    std::unique_ptr<RTree>  rtree_index;        // 非模板 RTree
+
+    std::unordered_map<uint64_t, IndexEntry> id_cache;
+
+    IndexType index_type;
+    bool      enable_cache;
+    size_t    max_cache_size;
+
+    mutable IndexStats   stats;
+    mutable std::mutex   stats_mutex;
+    mutable std::mutex   cache_mutex;
+
+    bool isinited_ = false;
+
+    // 缓存更新
+    void updateCache(const IndexEntry& entry) {
+        if (!enable_cache) return;
+        std::lock_guard<std::mutex> lock(cache_mutex);
+        if (id_cache.size() >= max_cache_size &&
+            id_cache.find(entry.id) == id_cache.end()) {
+            auto it = id_cache.begin();
+            if (it != id_cache.end()) id_cache.erase(it);
+        }
+        id_cache[entry.id] = entry;
+    }
+
+    // 从缓存获取
+    std::optional<IndexEntry> getFromCache(uint64_t id) const {
+        if (!enable_cache) return std::nullopt;
+        std::lock_guard<std::mutex> lock(cache_mutex);
+        auto it = id_cache.find(id);
+        if (it != id_cache.end()) {
+            stats.cache_hits++;
+            return it->second;
+        }
+        stats.cache_misses++;
+        return std::nullopt;
+    }
+
+    // 从空间条目构建 IndexEntry
+    IndexEntry buildFromSpatialEntry(const SpatialEntry& sp_entry) const {
+        IndexEntry entry;
+        entry.id = sp_entry.id;
+        entry.mbr = sp_entry.mbr;
+        entry.phy_addr = sp_entry.phy_addr;
+        // 如果存在 B+ 树，尝试获取 key，此处简化：使用 id 作为 key
+        if (btree_index) {
+            auto addr = btree_index->search(sp_entry.id);
+            if (addr.isValid())
+                entry.key = sp_entry.id;   // 临时，可根据需求调整
+        }
+        return entry;
+    }
+
+public:
+    // 构造函数：增加 rtree_dim 用于初始化 R 树维度
+    explicit MemoryIndex(IndexType type = IndexType::HYBRID,
+        bool use_cache = true,
+        size_t cache_size = 10000,
+        uint32_t btree_order = 5,
+        uint32_t rtree_dim = 2)
+        : index_type(type),
+        enable_cache(use_cache),
+        max_cache_size(cache_size),
+        isinited_(false)
+    {
+        if (type == IndexType::BTREE_ONLY || type == IndexType::HYBRID)
+            btree_index = std::make_unique<BPTree>(btree_order);
+
+        if (type == IndexType::RTREE_ONLY || type == IndexType::HYBRID)
+            rtree_index = std::make_unique<RTree>(rtree_dim, DEFAULT_R_TREE_ORDER);
+    }
+
+    // 初始化
+    void init() {
+        if (isinited_) {
+            std::cerr << "[MemoryIndex] 已经初始化" << std::endl;
+            return;
+        }
+        if (btree_index) btree_index->init();
+        if (rtree_index) rtree_index->init();
+        id_cache.clear();
+        isinited_ = true;
+        std::cout << "[MemoryIndex] 初始化成功，维度："
+            << (rtree_index ? std::to_string(rtree_index->getDimension()) : "N/A")
+            << "，索引类型："
+            << (index_type == IndexType::BTREE_ONLY ? "B+树" :
+                index_type == IndexType::RTREE_ONLY ? "R树" : "混合索引")
+            << "，缓存：" << (enable_cache ? "开启" : "关闭")
+            << "，缓存大小：" << max_cache_size << std::endl;
+    }
+
+    bool isinited() const { return isinited_; }
+
+    // 插入
+    bool insert(const IndexEntry& entry) {
+        if (!isinited_) {
+            std::cerr << "[MemoryIndex] 错误：索引未初始化" << std::endl;
+            return false;
+        }
+        if (!entry.isValid()) {
+            std::cerr << "[MemoryIndex] 错误：无效的数据条目" << std::endl;
+            return false;
+        }
+
+        bool success = true;
+        if (btree_index)
+            success &= btree_index->insert(entry.key, entry.phy_addr);
+        if (rtree_index)
+            success &= rtree_index->insert(entry.toSpatialEntry());
+
+        if (success && enable_cache) updateCache(entry);
+        if (success) {
+            std::lock_guard<std::mutex> lock(stats_mutex);
+            stats.total_entries++;
+        }
+        return success;
+    }
+
+    // 批量插入
+    size_t bulkInsert(const std::vector<IndexEntry>& entries) {
+        size_t cnt = 0;
+        for (auto& e : entries)
+            if (insert(e)) cnt++;
+        std::cout << "[MemoryIndex] 批量插入完成: " << cnt
+            << "/" << entries.size() << " 成功" << std::endl;
+        return cnt;
+    }
+
+    // 统一查询接口
+    QueryIterator query(const QueryCondition& condition) const {
+        QueryIterator iter;
+        if (!isinited_) {
+            std::cerr << "[MemoryIndex] 错误：索引未初始化" << std::endl;
+            return iter;
+        }
+
+        switch (condition.type) {
+        case QueryType::EQUAL: {
+            auto& eq = static_cast<const EqualCondition&>(condition);
+            if (btree_index) {
+                auto addr = btree_index->search(eq.key);
+                if (addr.isValid()) {
+                    auto cached = getFromCache(eq.key);
+                    if (cached) iter.addResult(*cached);
+                }
+            }
+            break;
+        }
+        case QueryType::RANGE: {
+            auto& range = static_cast<const RangeCondition&>(condition);
+            if (btree_index) {
+                auto res = btree_index->rangeSearch(range.start_key, range.end_key);
+                for (auto& [key, addr] : res) {
+                    auto cached = getFromCache(key);
+                    if (cached) iter.addResult(*cached);
+                }
+            }
+            break;
+        }
+        case QueryType::SPATIAL: {
+            auto& spatial = static_cast<const SpatialCondition&>(condition);
+            if (rtree_index) {
+                std::vector<SpatialEntry> sp_res;
+                rtree_index->search(spatial.query_mbr, sp_res);
+                for (auto& sp : sp_res) {
+                    auto cached = getFromCache(sp.id);
+                    if (cached) iter.addResult(*cached);
+                    else       iter.addResult(buildFromSpatialEntry(sp));
+                }
+            }
+            break;
+        }
+        }
+        return iter;
+    }
+
+    // 通过 ID 查询
+    std::optional<IndexEntry> findById(uint64_t id) const {
+        auto cached = getFromCache(id);
+        if (cached) return cached;
+        // 如果不在缓存，可通过 B+ 树尝试（此处简化）
+        if (btree_index) {
+            auto addr = btree_index->search(id);
+            if (addr.isValid()) {
+                IndexEntry entry;
+                entry.id = id;
+                entry.key = id;
+                entry.phy_addr = addr;
+                return entry;
+            }
+        }
+        return std::nullopt;
+    }
+
+    // 通过 key 查询物理地址
+    std::optional<PhyAddr> findByKey(uint64_t key) const {
+        if (!btree_index) return std::nullopt;
+        auto addr = btree_index->search(key);
+        if (addr.isValid()) return addr;
+        return std::nullopt;
+    }
+
+    // 范围查询物理地址
+    std::vector<std::pair<uint64_t, PhyAddr>> rangeSearchByKey(uint64_t start, uint64_t end) const {
+        if (!btree_index) return {};
+        return btree_index->rangeSearch(start, end);
+    }
+
+    // 删除条目
+    bool remove(uint64_t key) {
+        if (!isinited_ || !btree_index) return false;
+        btree_index->remove(key);
+        if (enable_cache) {
+            std::lock_guard<std::mutex> lock(cache_mutex);
+            id_cache.erase(key);
+        }
+        // 注意：R 树的删除需额外实现，此处略
+        return true;
+    }
+
+    // 清空
+    void clear() {
+        if (btree_index) btree_index->clear();
+        if (rtree_index) rtree_index->clear();
+        {
+            std::lock_guard<std::mutex> lock(cache_mutex);
+            id_cache.clear();
+        }
+        {
+            std::lock_guard<std::mutex> lock(stats_mutex);
+            stats = IndexStats();
+        }
+        isinited_ = false;
+        std::cout << "[MemoryIndex] 已清空" << std::endl;
+    }
+
+    // 获取统计
+    IndexStats getStats() const {
+        std::lock_guard<std::mutex> lock(stats_mutex);
+        return stats;
+    }
+
+    void printStats() const {
+        auto s = getStats();
+        std::cout << "\n========== 内存索引统计 ==========" << std::endl;
+        std::cout << "索引类型: " << (index_type == IndexType::BTREE_ONLY ? "B+树" :
+            index_type == IndexType::RTREE_ONLY ? "R树" : "混合索引") << std::endl;
+        std::cout << "总条目数: " << s.total_entries << std::endl;
+        std::cout << "B+树节点数: " << s.btree_nodes << std::endl;
+        std::cout << "R树节点数: " << s.rtree_nodes << std::endl;
+        std::cout << "缓存命中: " << s.cache_hits << std::endl;
+        std::cout << "缓存未命中: " << s.cache_misses << std::endl;
+        size_t total = s.cache_hits + s.cache_misses;
+        if (total > 0)
+            std::cout << "缓存命中率: " << std::fixed << std::setprecision(2)
+            << (double)s.cache_hits / total * 100 << "%" << std::endl;
+        std::cout << "===================================" << std::endl;
+    }
+
+    // 获取所有 B+ 树键值
+    std::vector<uint64_t> getAllKeys() const {
+        if (!btree_index) return {};
+        return btree_index->getAllKeys();
+    }
+};
+
+#endif // __MEMORY_INDEX_H__
