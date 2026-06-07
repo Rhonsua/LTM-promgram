@@ -33,9 +33,9 @@ private:
     void InsertIntoParent(std::shared_ptr<BPNode> leftNode, uint64_t promoteKey, std::shared_ptr<BPNode> rightNode);
     void SplitInternalNode(std::shared_ptr<BPNode> internalNode);
     void handleLeafUnderflow(std::shared_ptr<BPNode> leafNode);
-    void handleInternalUnderflow(std::shared_ptr<BPNode> internalNode, int nodeIdx);
+    void handleInternalUnderflow(std::shared_ptr<BPNode> internalNode, size_t nodeIdx);
     void mergeLeafNodes(std::shared_ptr<BPNode> leftNode, std::shared_ptr<BPNode> rightNode);
-    void mergeInternalNodes(std::shared_ptr<BPNode> parentNode, int leftIdx, uint64_t splitKey);
+    void mergeInternalNodes(std::shared_ptr<BPNode> parentNode, size_t leftIdx, uint64_t splitKey);
 
 public:
     explicit BPTree(uint32_t treeOrder = BP_ORDER);

@@ -1,20 +1,20 @@
-
-
 #ifndef __COMMON_DEF_H__
 #define __COMMON_DEF_H__
 
-#include <cstdint>   // 必须包含此头文件
+#include <cstdint>
 
 constexpr uint64_t INVALID_KEY = 0;
 constexpr uint64_t INVALID_ID = 0;
 constexpr uint64_t INVALID_BLOCK = 0;
 
+//物理地址结构体
 struct PhyAddr {
-	uint64_t block_id = 0;
-	uint32_t offset = 0;
+	uint64_t block_id = 0;//块id（文件大小）
+	uint32_t offset = 0;//块内偏移量（有效标记）
 	bool isValid() const {
 		return block_id != INVALID_BLOCK && offset > 0;
-	}
+	}//判断地址是否有效
 };
 
-#endif // __COMMON_DEF_H__
+#endif // COMMON_DEF_H__
+

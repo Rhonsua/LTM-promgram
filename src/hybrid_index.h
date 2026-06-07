@@ -1,95 +1,70 @@
-#ifndef HYBRID_INDEX_H
-#define HYBRID_INDEX_H
-
+#pragma once
 #include "bplus_tree.h"
 #include "r_tree.h"
-#include "index_interface.h"  // IndexEntry, QueryCondition, QueryIterator, IndexType
+#include "index_interface.h"
 #include "log.h"
 #include <memory>
-#include <stdexcept>
+#include <unordered_map>
 
 class HybridIndex {
 private:
     std::unique_ptr<BPTree> btree_;
     std::unique_ptr<RTree>  rtree_;
     IndexType               type_;
-    uint32_t                dimension_;   // R树维度
+    uint32_t                dimension_;
     bool                    initialized_ = false;
+    std::unordered_map<uint64_t, SpatialEntry> key_to_spatial_;
 
 public:
-    // 构造函数
     HybridIndex(IndexType type, uint32_t btree_order, uint32_t rtree_dim)
-        : type_(type), dimension_(rtree_dim)
-    {
+        : type_(type), dimension_(rtree_dim) {
         if (type == IndexType::BTREE_ONLY || type == IndexType::HYBRID)
             btree_ = std::make_unique<BPTree>(btree_order);
         if (type == IndexType::RTREE_ONLY || type == IndexType::HYBRID)
             rtree_ = std::make_unique<RTree>(rtree_dim, DEFAULT_R_TREE_ORDER);
     }
 
-    // 初始化
     void init() {
         if (initialized_) {
-            LOG_INFO << "[HybridIndex] 已经初始化" << std::endl;
+            LOG_INFO << "[HybridIndex] Already initialized" << std::endl;
             return;
         }
         if (btree_) btree_->init();
         if (rtree_) rtree_->init();
+        key_to_spatial_.clear();
         initialized_ = true;
-        LOG_INFO << "[HybridIndex] 初始化完成" << std::endl;
+        LOG_INFO << "[HybridIndex] Init done" << std::endl;
     }
 
     bool isInitialized() const { return initialized_; }
 
-    // 插入（仅索引层，不涉及缓存）
     bool insert(const IndexEntry& entry) {
-        if (!initialized_) {
-            LOG_ERROR << "[HybridIndex] 索引未初始化，插入失败" << std::endl;
-            return false;
-        }
-        if (!entry.isValid()) {
-            LOG_ERROR << "[HybridIndex] 无效的IndexEntry" << std::endl;
-            return false;
-        }
-
+        if (!initialized_) return false;
+        if (!entry.isValid()) return false;
         bool ok = true;
-        if (btree_)
-            ok &= btree_->insert(entry.key, entry.phy_addr);
-        if (rtree_)
-            ok &= rtree_->insert(entry.toSpatialEntry());
-
+        if (btree_) ok &= btree_->insert(entry.key, entry.phy_addr);
+        if (rtree_) {
+            SpatialEntry sp = entry.toSpatialEntry();
+            ok &= rtree_->insert(sp);
+            if (ok) key_to_spatial_[entry.key] = sp;
+        }
         return ok;
     }
 
-    // 按key删除（B+树 + 尝试R树删除，但R树需要mbr，这里仅做B+树删除）
     bool removeByKey(uint64_t key) {
-        if (!initialized_ || !btree_) {
-            LOG_ERROR << "[HybridIndex] 无B+树或未初始化，删除失败" << std::endl;
-            return false;
+        if (!initialized_) return false;
+        if (btree_) btree_->remove(key);
+        auto it = key_to_spatial_.find(key);
+        if (it != key_to_spatial_.end()) {
+            if (rtree_) rtree_->remove(it->second);
+            key_to_spatial_.erase(it);
         }
-        btree_->remove(key);
-        // R树删除需要完整的SpatialEntry，此处暂不处理，由上层通过其他方式补充
         return true;
     }
 
-    // 根据完整条目删除（同时删B+树和R树）
-    bool removeEntry(const IndexEntry& entry) {
-        if (!initialized_) return false;
-        bool ok = true;
-        if (btree_)
-            btree_->remove(entry.key);
-        if (rtree_)
-            ok &= rtree_->remove(entry.toSpatialEntry());
-        return ok;
-    }
-
-    // 查询
     QueryIterator query(const QueryCondition& condition) const {
         QueryIterator iter;
-        if (!initialized_) {
-            LOG_ERROR << "[HybridIndex] 索引未初始化，查询失败" << std::endl;
-            return iter;
-        }
+        if (!initialized_) return iter;
 
         switch (condition.type) {
         case QueryType::EQUAL: {
@@ -100,7 +75,15 @@ public:
                     IndexEntry entry;
                     entry.key = eq.key;
                     entry.phy_addr = addr;
-                    entry.id = eq.key;   // 假设key即id，实际项目可改进
+                    // 尝试从映射中获取完整 id 和 mbr
+                    auto it = key_to_spatial_.find(eq.key);
+                    if (it != key_to_spatial_.end()) {
+                        entry.id = it->second.id;
+                        entry.mbr = it->second.mbr;
+                    }
+                    else {
+                        entry.id = eq.key;   // 回退：无映射时假设 id == key
+                    }
                     iter.addResult(entry);
                 }
             }
@@ -114,7 +97,14 @@ public:
                     IndexEntry entry;
                     entry.key = key;
                     entry.phy_addr = addr;
-                    entry.id = key;
+                    auto it = key_to_spatial_.find(key);
+                    if (it != key_to_spatial_.end()) {
+                        entry.id = it->second.id;
+                        entry.mbr = it->second.mbr;
+                    }
+                    else {
+                        entry.id = key;
+                    }
                     iter.addResult(entry);
                 }
             }
@@ -130,10 +120,8 @@ public:
                     entry.id = sp.id;
                     entry.mbr = sp.mbr;
                     entry.phy_addr = sp.phy_addr;
-                    if (btree_) {
-                        // 尝试通过id反查key（简化：key = id）
-                        entry.key = sp.id;
-                    }
+                    // 通过 id 查找 key（若有）
+                    if (btree_) entry.key = sp.id;   // 简化：假设 key == id 或从其他映射获取
                     iter.addResult(entry);
                 }
             }
@@ -143,25 +131,24 @@ public:
         return iter;
     }
 
-    // 获取全部key（来自B+树）
     std::vector<uint64_t> getAllKeys() const {
         if (btree_) return btree_->getAllKeys();
         return {};
     }
 
-    // 清空索引
     void clear() {
         if (btree_) btree_->clear();
         if (rtree_) rtree_->clear();
+        key_to_spatial_.clear();
         initialized_ = false;
-        LOG_INFO << "[HybridIndex] 索引已清空" << std::endl;
+        LOG_INFO << "[HybridIndex] Cleared" << std::endl;
     }
 
-    // 暴露底层指针（供高级操作）
+    // 非 const 版本（返回非 const 指针）
     BPTree* getBTree() { return btree_.get(); }
     RTree* getRTree() { return rtree_.get(); }
+
+    // const 版本（返回 const 指针）
     const BPTree* getBTree() const { return btree_.get(); }
     const RTree* getRTree() const { return rtree_.get(); }
 };
-
-#endif // HYBRID_INDEX_H
