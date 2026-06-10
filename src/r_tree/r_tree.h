@@ -1,4 +1,5 @@
-#pragma once
+#ifndef R_TREE_H
+#define R_TREE_H
 
 #include <iostream>
 #include <algorithm>
@@ -8,6 +9,8 @@
 #include <vector>
 #include <cmath>
 #include <functional>
+#include <queue>
+#include <limits>
 #include "log.h"
 #include "common_def.h"
 
@@ -27,17 +30,14 @@ struct MBR {
 
     MBR(const std::vector<double>& min, const std::vector<double>& max)
         : min_vals(min), max_vals(max), dimension(static_cast<uint32_t>(min.size())) {
-        if (min_vals.size() != max_vals.size()) {
-            dimension = 0;
-        }
+        if (min_vals.size() != max_vals.size()) dimension = 0;
     }
 
     bool isValid() const {
         if (dimension == 0) return false;
         if (min_vals.size() != dimension || max_vals.size() != dimension) return false;
-        for (uint32_t i = 0; i < dimension; ++i) {
+        for (uint32_t i = 0; i < dimension; ++i)
             if (min_vals[i] > max_vals[i]) return false;
-        }
         return true;
     }
 
@@ -47,21 +47,21 @@ struct MBR {
         if (!isValid()) return 0.0;
         double volume = 1.0;
         for (uint32_t i = 0; i < dimension; ++i) {
-            double length = max_vals[i] - min_vals[i];
-            if (length < 0) return 0.0;
-            volume *= length;
+            double len = max_vals[i] - min_vals[i];
+            if (len < 0) return 0.0;
+            volume *= len;
         }
         return volume;
     }
 
     MBR merge(const MBR& other) const {
         if (dimension != other.dimension) return MBR(0);
-        MBR result(dimension);
+        MBR res(dimension);
         for (uint32_t i = 0; i < dimension; ++i) {
-            result.min_vals[i] = std::min(min_vals[i], other.min_vals[i]);
-            result.max_vals[i] = std::max(max_vals[i], other.max_vals[i]);
+            res.min_vals[i] = std::min(min_vals[i], other.min_vals[i]);
+            res.max_vals[i] = std::max(max_vals[i], other.max_vals[i]);
         }
-        return result;
+        return res;
     }
 
     double getExpansionVolume(const MBR& other) const {
@@ -72,17 +72,15 @@ struct MBR {
 
     bool contains(const MBR& other) const {
         if (!isValid() || !other.isValid() || dimension != other.dimension) return false;
-        for (uint32_t i = 0; i < dimension; ++i) {
+        for (uint32_t i = 0; i < dimension; ++i)
             if (min_vals[i] > other.min_vals[i] || max_vals[i] < other.max_vals[i]) return false;
-        }
         return true;
     }
 
     bool intersects(const MBR& other) const {
         if (!isValid() || !other.isValid() || dimension != other.dimension) return false;
-        for (uint32_t i = 0; i < dimension; ++i) {
+        for (uint32_t i = 0; i < dimension; ++i)
             if (min_vals[i] > other.max_vals[i] || max_vals[i] < other.min_vals[i]) return false;
-        }
         return true;
     }
 };
@@ -105,7 +103,7 @@ struct SpatialEntry {
 struct RTreeNode {
     bool is_leaf = true;
     std::weak_ptr<RTreeNode> parent;
-    std::vector<MBR> mbrs;
+    std::vector<MBR> mbrs;           // leaf: per?entry MBR; internal: per?child aggregate MBR
     std::vector<SpatialEntry> entries;
     std::vector<std::shared_ptr<RTreeNode>> children;
     uint32_t dimension;
@@ -120,35 +118,70 @@ struct RTreeNode {
         return is_leaf ? entries.empty() : children.empty();
     }
 
-    bool clear() {
+    void clear() {
         mbrs.clear();
         entries.clear();
         children.clear();
         parent.reset();
-        return true;
     }
 
+    // Recalculate the mbrs array for this node
     bool updateMBR() {
         if (is_leaf) {
             mbrs.clear();
-            for (const auto& entry : entries) {
-                if (entry.getDim() != dimension) return false;
-                mbrs.push_back(entry.mbr);
+            mbrs.reserve(entries.size());
+            for (const auto& e : entries) {
+                if (e.getDim() != dimension) return false;
+                mbrs.push_back(e.mbr);
             }
         }
         else {
             mbrs.clear();
+            mbrs.reserve(children.size());
             for (const auto& child : children) {
-                if (!child->mbrs.empty()) {
-                    MBR child_mbr = child->mbrs[0];
-                    for (size_t i = 1; i < child->mbrs.size(); ++i) {
-                        child_mbr = child_mbr.merge(child->mbrs[i]);
-                    }
-                    mbrs.push_back(child_mbr);
+                // Compute the aggregate MBR of the child node
+                MBR child_mbr(dimension);
+                if (child->is_leaf) {
+                    if (child->entries.empty()) continue;
+                    child_mbr = child->entries[0].mbr;
+                    for (size_t i = 1; i < child->entries.size(); ++i)
+                        child_mbr = child_mbr.merge(child->entries[i].mbr);
                 }
+                else {
+                    if (child->children.empty()) continue;
+                    // Use child's mbrs if available, otherwise fallback to compute
+                    if (!child->mbrs.empty()) {
+                        child_mbr = child->mbrs[0];
+                        for (size_t i = 1; i < child->mbrs.size(); ++i)
+                            child_mbr = child_mbr.merge(child->mbrs[i]);
+                    }
+                    else {
+                        // recursive fallback
+                        child_mbr = child->getNodeMBR();
+                    }
+                }
+                mbrs.push_back(child_mbr);
             }
         }
         return true;
+    }
+
+    // Recursively compute the aggregate MBR of this node (used for parent updates)
+    MBR getNodeMBR() const {
+        MBR res(dimension);
+        if (is_leaf) {
+            if (entries.empty()) return res;
+            res = entries[0].mbr;
+            for (size_t i = 1; i < entries.size(); ++i)
+                res = res.merge(entries[i].mbr);
+        }
+        else {
+            if (children.empty()) return res;
+            res = children[0]->getNodeMBR();
+            for (size_t i = 1; i < children.size(); ++i)
+                res = res.merge(children[i]->getNodeMBR());
+        }
+        return res;
     }
 
     uint32_t getDim() const { return dimension; }
@@ -179,7 +212,7 @@ private:
 public:
     explicit RTree(uint32_t dim = 2, uint32_t treeOrder = DEFAULT_R_TREE_ORDER)
         : dimension(dim), order(treeOrder) {
-        LOG_INFO << "[RTree] 创建R树，维度：" << dimension << "，阶数：" << order << std::endl;
+        LOG_INFO << "[RTree] Created RTree, dimension: " << dimension << ", order: " << order << std::endl;
     }
 
     bool init();
@@ -199,3 +232,5 @@ public:
         uint32_t& total_entries, uint32_t& tree_height) const;
     bool printTree(std::ostream& os = std::cout) const;
 };
+
+#endif // R_TREE_H
