@@ -1,0 +1,30 @@
+[
+  {
+    "frames": 12,
+    "regime": "evicting",
+    "repeats": 3,
+    "api_throughput_median": 275.20109060651083,
+    "api_throughput_min": 273.4050739802277,
+    "api_throughput_max": 278.39042953390174,
+    "wall_throughput_median": 268.6626342136653,
+    "page_reads_median": 1095,
+    "trajectory": "measure",
+    "schema_version": 2,
+    "measurement_scope": "api_calls_without_write_probes",
+    "note": "No extra write probes; inline full-record oracle and per-call snapshots remain; wall time includes them."
+  },
+  {
+    "frames": 128,
+    "regime": "resident",
+    "repeats": 3,
+    "api_throughput_median": 433.0993542464081,
+    "api_throughput_min": 422.39677816012653,
+    "api_throughput_max": 452.98777509207673,
+    "wall_throughput_median": 417.10906238664234,
+    "page_reads_median": 0,
+    "trajectory": "measure",
+    "schema_version": 2,
+    "measurement_scope": "api_calls_without_write_probes",
+    "note": "No extra write probes; inline full-record oracle and per-call snapshots remain; wall time includes them."
+  }
+]

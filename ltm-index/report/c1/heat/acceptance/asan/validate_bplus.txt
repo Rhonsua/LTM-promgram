@@ -1,0 +1,11 @@
+B+ tree validation passed
+  params   : ops=20000 capacity=32 frames=128 seed=42
+  size     : height=2 pages=157 entries=3176 (inserts 12097 / erases 7903)
+  structure: splits 201 / merges 47 / borrows 818, avg fill 63.2%
+  buffer   : hit rate 99.0%, evictions 1616 (dirty 626)
+  I/O      : reads 1588 pages / writes 627 pages
+  WAL leak : outside-txn 0, missing-before 0, identical-skipped 1018, unstamped-writes 0
+  WAL      : deltas 43024, LSN stamps 43024 (missed 0), sync-on-flush 3, I6 violations 0, page bytes 180396032 vs changed-byte range 154784471 (1.2x)
+  checks   : I1 parent key == child min key, I2 leaf chain bidirectional and ascending, I3 fill >= half capacity, I4 equal path lengths
+
+--- stderr ---

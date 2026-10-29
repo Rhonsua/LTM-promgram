@@ -1,0 +1,13 @@
+[
+  {
+    "workload": "knn",
+    "frames": 64,
+    "regime": "resident",
+    "repetitions": 3,
+    "throughput_min": 97656.25,
+    "throughput_median": 102197.2406745018,
+    "throughput_max": 102986.61174047373,
+    "p99_median_us": 12.6,
+    "page_reads_median": 0
+  }
+]

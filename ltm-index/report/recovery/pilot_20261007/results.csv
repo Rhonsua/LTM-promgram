@@ -1,0 +1,2 @@
+tail_updates,repeat,input_hash,dataset_hash,checkpoint_us,checkpoint_before_bytes,checkpoint_kept_bytes,wal_bytes,records_scanned,pages_redone,records_redone,records_skipped,txns_seen,txns_undone,checkpoint_lsn,redo_start_lsn,recover_us,storage_ready_us
+16,1,12849551342429167921,8076611669020695418,12429,50372896,592,827568,218,3,53,47,16,0,13194,13194,13271,20976

@@ -1,0 +1,67 @@
+[
+  {
+    "tail_updates": 0,
+    "repetitions": 3,
+    "wal_bytes": 592,
+    "records_scanned": 2,
+    "recover_us_min": 1121,
+    "recover_us_median": 1564,
+    "recover_us_max": 1594,
+    "storage_ready_us_median": 4516,
+    "checkpoint_us_median": 13442,
+    "records_redone_median": 0,
+    "pages_redone_median": 0
+  },
+  {
+    "tail_updates": 16,
+    "repetitions": 3,
+    "wal_bytes": 827568,
+    "records_scanned": 218,
+    "recover_us_min": 13409,
+    "recover_us_median": 13782,
+    "recover_us_max": 14567,
+    "storage_ready_us_median": 21553,
+    "checkpoint_us_median": 16785,
+    "records_redone_median": 53,
+    "pages_redone_median": 3
+  },
+  {
+    "tail_updates": 64,
+    "repetitions": 3,
+    "wal_bytes": 3349816,
+    "records_scanned": 876,
+    "recover_us_min": 51372,
+    "recover_us_median": 51640,
+    "recover_us_max": 52644,
+    "storage_ready_us_median": 74613,
+    "checkpoint_us_median": 12271,
+    "records_redone_median": 214,
+    "pages_redone_median": 3
+  },
+  {
+    "tail_updates": 256,
+    "repetitions": 3,
+    "wal_bytes": 14248680,
+    "records_scanned": 3704,
+    "recover_us_min": 221520,
+    "recover_us_median": 224021,
+    "recover_us_max": 224095,
+    "storage_ready_us_median": 314236,
+    "checkpoint_us_median": 13725,
+    "records_redone_median": 1262,
+    "pages_redone_median": 11
+  },
+  {
+    "tail_updates": 512,
+    "repetitions": 3,
+    "wal_bytes": 29463656,
+    "records_scanned": 7640,
+    "recover_us_min": 456151,
+    "recover_us_median": 462565,
+    "recover_us_max": 467914,
+    "storage_ready_us_median": 645778,
+    "checkpoint_us_median": 10004,
+    "records_redone_median": 2695,
+    "pages_redone_median": 21
+  }
+]

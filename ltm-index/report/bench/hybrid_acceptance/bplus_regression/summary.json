@@ -1,0 +1,46 @@
+[
+  {
+    "workload": "point",
+    "frames": 8,
+    "regime": "evicting",
+    "repetitions": 3,
+    "throughput_min": 69810.46458864187,
+    "throughput_median": 71136.40405477506,
+    "throughput_max": 71851.98491108316,
+    "p99_median_us": 31.6,
+    "page_reads_median": 172
+  },
+  {
+    "workload": "point",
+    "frames": 128,
+    "regime": "resident",
+    "repetitions": 3,
+    "throughput_min": 972762.6459143986,
+    "throughput_median": 998003.9920159703,
+    "throughput_max": 1002004.0080160344,
+    "p99_median_us": 1.1,
+    "page_reads_median": 0
+  },
+  {
+    "workload": "range",
+    "frames": 8,
+    "regime": "evicting",
+    "repetitions": 3,
+    "throughput_min": 34106.41200545704,
+    "throughput_median": 36528.34599649326,
+    "throughput_max": 36820.884805861904,
+    "p99_median_us": 51.6,
+    "page_reads_median": 280
+  },
+  {
+    "workload": "range",
+    "frames": 128,
+    "regime": "resident",
+    "repetitions": 3,
+    "throughput_min": 163438.75132793983,
+    "throughput_median": 164001.6400164002,
+    "throughput_max": 167855.64414603423,
+    "p99_median_us": 6.9,
+    "page_reads_median": 0
+  }
+]

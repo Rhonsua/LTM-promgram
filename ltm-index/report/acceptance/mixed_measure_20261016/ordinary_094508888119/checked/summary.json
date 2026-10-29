@@ -1,0 +1,30 @@
+[
+  {
+    "frames": 12,
+    "regime": "evicting",
+    "repeats": 3,
+    "api_throughput_median": 2588.786756457298,
+    "api_throughput_min": 2531.876322905377,
+    "api_throughput_max": 2618.6145085209723,
+    "wall_throughput_median": 2437.369753053821,
+    "page_reads_median": 1095,
+    "trajectory": "checked",
+    "schema_version": 1,
+    "measurement_scope": "api_calls_with_interleaved_probes",
+    "note": "Interleaved probes affect cache."
+  },
+  {
+    "frames": 128,
+    "regime": "resident",
+    "repeats": 3,
+    "api_throughput_median": 4519.324632126974,
+    "api_throughput_min": 4196.895975736348,
+    "api_throughput_max": 4528.479608256322,
+    "wall_throughput_median": 4090.626465807817,
+    "page_reads_median": 0,
+    "trajectory": "checked",
+    "schema_version": 1,
+    "measurement_scope": "api_calls_with_interleaved_probes",
+    "note": "Interleaved probes affect cache."
+  }
+]

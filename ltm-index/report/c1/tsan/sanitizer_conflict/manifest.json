@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "command": [
+    "cmake",
+    "-S",
+    "/mnt/d/db_project/LTM/ltm-index",
+    "-B",
+    "/mnt/d/db_project/LTM/ltm-index/report/c1/tsan/sanitizer_conflict/build",
+    "-G",
+    "Ninja",
+    "-DCMAKE_C_COMPILER=clang",
+    "-DCMAKE_CXX_COMPILER=clang++",
+    "-DLTM_ENABLE_ASAN=ON",
+    "-DLTM_ENABLE_TSAN=ON"
+  ],
+  "exit_code": 1
+}

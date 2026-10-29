@@ -1,0 +1,20 @@
+{
+  "runs": [
+    {
+      "test": "test_c1_replay",
+      "exit_code": 0,
+      "seconds": 174.146745908
+    },
+    {
+      "test": "test_hybrid_diff",
+      "exit_code": 0,
+      "seconds": 6.734420849999992
+    },
+    {
+      "test": "test_hybrid_concurrency",
+      "exit_code": 0,
+      "seconds": 62.93375915500002
+    }
+  ],
+  "passed": true
+}

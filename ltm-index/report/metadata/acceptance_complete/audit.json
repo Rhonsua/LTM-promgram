@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "source_files": 88,
+  "binary_files": 82,
+  "changed_core_files": [
+    "src/storage/buffer_pool.cc",
+    "src/storage/disk_manager.cc",
+    "src/storage/disk_manager.h"
+  ],
+  "ctest_per_build": 19,
+  "metadata_per_build": 7,
+  "python_protocol": 13,
+  "crash_summary": {
+    "total": 78,
+    "passed": 78,
+    "real_crashes": 72
+  }
+}

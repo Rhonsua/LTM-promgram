@@ -1,0 +1,874 @@
+{
+  "passed": true,
+  "started_utc": "2026-10-07T07:41:39.846228+00:00",
+  "runs": [
+    {
+      "stage": "normal_ctest",
+      "command": [
+        "D:\\visual studio\\IDE\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\ctest.exe",
+        "--test-dir",
+        "D:\\db_project\\LTM\\ltm-index\\build-ninja",
+        "-E",
+        "validate",
+        "--output-on-failure"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "passed": true,
+      "seconds": 148.18,
+      "seconds_source": "ctest"
+    },
+    {
+      "stage": "normal_metadata",
+      "command": [
+        "D:\\db_project\\LTM\\ltm-index\\build-ninja\\test_metadata.exe"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "passed": true,
+      "seconds": 2.1909555999991426,
+      "seconds_source": "wall_clock"
+    },
+    {
+      "stage": "normal_validate_bplus",
+      "command": [
+        "D:\\db_project\\LTM\\ltm-index\\build-ninja\\ltm_validate_bplus.exe"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "passed": true,
+      "seconds": 38.26278530000127,
+      "seconds_source": "wall_clock"
+    },
+    {
+      "stage": "normal_validate_rtree",
+      "command": [
+        "D:\\db_project\\LTM\\ltm-index\\build-ninja\\ltm_validate_rtree.exe"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "passed": true,
+      "seconds": 31.28788230000282,
+      "seconds_source": "wall_clock"
+    },
+    {
+      "stage": "normal_pipeline",
+      "command": [
+        "D:\\python\\python.exe",
+        "D:\\db_project\\LTM\\ltm-index\\scripts\\run_pipeline.py",
+        "--skip-build",
+        "--build-dir",
+        "build-ninja",
+        "--output-dir",
+        "D:\\db_project\\LTM\\ltm-index\\report\\metadata\\acceptance_complete\\normal_pipeline"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "passed": true,
+      "seconds": 2.2266232000001764,
+      "seconds_source": "wall_clock"
+    },
+    {
+      "stage": "normal_damaged_rejected",
+      "command": [
+        "D:\\db_project\\LTM\\ltm-index\\build-ninja\\ltm_pipeline.exe",
+        "--stage=verify",
+        "--run-dir=D:\\db_project\\LTM\\ltm-index\\report\\metadata\\acceptance_complete\\normal_damaged"
+      ],
+      "exit_code": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "seconds": 0.04609189999973751,
+      "seconds_source": "wall_clock"
+    },
+    {
+      "stage": "asan_imports",
+      "command": [
+        "D:\\visual studio\\IDE\\VC\\Tools\\MSVC\\14.51.36231\\bin\\Hostx64\\x64\\dumpbin.exe",
+        "/imports",
+        "D:\\db_project\\LTM\\ltm-index\\build-asan\\test_metadata.exe"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "passed": true,
+      "seconds": 0.09148300000015297,
+      "seconds_source": "wall_clock"
+    },
+    {
+      "stage": "asan_ctest",
+      "command": [
+        "D:\\visual studio\\IDE\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\ctest.exe",
+        "--test-dir",
+        "D:\\db_project\\LTM\\ltm-index\\build-asan",
+        "-E",
+        "validate",
+        "--output-on-failure"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "passed": true,
+      "seconds": 235.55,
+      "seconds_source": "ctest"
+    },
+    {
+      "stage": "asan_metadata",
+      "command": [
+        "D:\\db_project\\LTM\\ltm-index\\build-asan\\test_metadata.exe"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "passed": true,
+      "seconds": 3.142738599999575,
+      "seconds_source": "wall_clock"
+    },
+    {
+      "stage": "asan_validate_bplus",
+      "command": [
+        "D:\\db_project\\LTM\\ltm-index\\build-asan\\ltm_validate_bplus.exe"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "passed": true,
+      "seconds": 40.92945400000099,
+      "seconds_source": "wall_clock"
+    },
+    {
+      "stage": "asan_validate_rtree",
+      "command": [
+        "D:\\db_project\\LTM\\ltm-index\\build-asan\\ltm_validate_rtree.exe"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "passed": true,
+      "seconds": 32.12135169999965,
+      "seconds_source": "wall_clock"
+    },
+    {
+      "stage": "asan_pipeline",
+      "command": [
+        "D:\\python\\python.exe",
+        "D:\\db_project\\LTM\\ltm-index\\scripts\\run_pipeline.py",
+        "--skip-build",
+        "--build-dir",
+        "build-asan",
+        "--output-dir",
+        "D:\\db_project\\LTM\\ltm-index\\report\\metadata\\acceptance_complete\\asan_pipeline"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "passed": true,
+      "seconds": 2.5661380999990797,
+      "seconds_source": "wall_clock"
+    },
+    {
+      "stage": "asan_damaged_rejected",
+      "command": [
+        "D:\\db_project\\LTM\\ltm-index\\build-asan\\ltm_pipeline.exe",
+        "--stage=verify",
+        "--run-dir=D:\\db_project\\LTM\\ltm-index\\report\\metadata\\acceptance_complete\\asan_damaged"
+      ],
+      "exit_code": 1,
+      "expected_exit": 1,
+      "passed": true,
+      "seconds": 0.08446339999863994,
+      "seconds_source": "wall_clock"
+    },
+    {
+      "stage": "layering",
+      "command": [
+        "D:\\python\\python.exe",
+        "D:\\db_project\\LTM\\ltm-index\\scripts\\check_layering.py"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "passed": true,
+      "seconds": 0.21577590000015334,
+      "seconds_source": "wall_clock"
+    },
+    {
+      "stage": "ascii_literals",
+      "command": [
+        "D:\\python\\python.exe",
+        "D:\\db_project\\LTM\\ltm-index\\scripts\\check_ascii_literals.py"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "passed": true,
+      "seconds": 0.15511289999994915,
+      "seconds_source": "wall_clock"
+    },
+    {
+      "stage": "python_protocol",
+      "command": [
+        "D:\\python\\python.exe",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_*.py"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "passed": true,
+      "seconds": 0.3120104000008723,
+      "seconds_source": "wall_clock"
+    }
+  ],
+  "crash_cases": [
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_1_bplus_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_1_bplus_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_1_bplus_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_1_hybrid_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_1_hybrid_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_1_hybrid_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_5_bplus_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_5_bplus_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_5_bplus_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_5_hybrid_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_5_hybrid_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_5_hybrid_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_40_bplus_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_40_bplus_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_40_bplus_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_40_hybrid_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_40_hybrid_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_40_hybrid_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_300_bplus_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_300_bplus_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_300_bplus_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_300_hybrid_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_300_hybrid_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_300_hybrid_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_900_bplus_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_900_bplus_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_900_bplus_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_900_hybrid_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_900_hybrid_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "wal_append_900_hybrid_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "before_flush_1_bplus_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "before_flush_1_bplus_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "before_flush_1_bplus_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "before_flush_1_hybrid_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "before_flush_1_hybrid_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "before_flush_1_hybrid_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "before_flush_2_bplus_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "before_flush_2_bplus_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "before_flush_2_bplus_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "before_flush_2_hybrid_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "before_flush_2_hybrid_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "before_flush_2_hybrid_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "before_flush_5_bplus_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "before_flush_5_bplus_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "before_flush_5_bplus_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "before_flush_5_hybrid_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "before_flush_5_hybrid_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "before_flush_5_hybrid_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "checkpoint_stage_1_bplus_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "checkpoint_stage_1_bplus_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "checkpoint_stage_1_bplus_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "checkpoint_stage_1_hybrid_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "checkpoint_stage_1_hybrid_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "checkpoint_stage_1_hybrid_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "checkpoint_stage_2_bplus_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "checkpoint_stage_2_bplus_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "checkpoint_stage_2_bplus_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "checkpoint_stage_2_hybrid_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "checkpoint_stage_2_hybrid_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "checkpoint_stage_2_hybrid_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "checkpoint_stage_3_bplus_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "checkpoint_stage_3_bplus_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "checkpoint_stage_3_bplus_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "checkpoint_stage_3_hybrid_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "checkpoint_stage_3_hybrid_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "checkpoint_stage_3_hybrid_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "checkpoint_stage_4_bplus_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "checkpoint_stage_4_bplus_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "checkpoint_stage_4_bplus_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "checkpoint_stage_4_hybrid_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "checkpoint_stage_4_hybrid_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "yes",
+      "recovery_us": null,
+      "label": "checkpoint_stage_4_hybrid_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "no",
+      "recovery_us": null,
+      "label": "corrupt_page_0_bplus_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "no",
+      "recovery_us": null,
+      "label": "corrupt_page_0_bplus_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "no",
+      "recovery_us": null,
+      "label": "corrupt_page_0_bplus_mixed"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "no",
+      "recovery_us": null,
+      "label": "tear_page_0_bplus_sequential"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "no",
+      "recovery_us": null,
+      "label": "tear_page_0_bplus_random"
+    },
+    {
+      "verdict": "PASS",
+      "crashed": "no",
+      "recovery_us": null,
+      "label": "tear_page_0_bplus_mixed"
+    }
+  ],
+  "source_sha256": {
+    "CMakeLists.txt": "a43b65b0f80dd4a66b18b1126acb7cbdedaf00272a4f88cf293d223c66ff27b8",
+    "report\\metadata\\accept_metadata.py": "27f3cce7bb0c230b741911b40fc2f6b166b68b14bb8f82e9c2f231d99f501ba8",
+    "src\\bench\\bench_main.cc": "77592f37730e84124f2ae12405d4233ec3fd1929a3d95fc7ea400399e7ff1f28",
+    "src\\bench\\hybrid_bench.cc": "cfb63a679e35b88d0ecfdef8d73e027e7d2e7026d9f0b7de3ea4fc60b9f9c84b",
+    "src\\bench\\spatial_reference.h": "cc098e4c80c0014dc2f3f62d8c057c4e0f1329fa9a75f739bef5e872f4a30cfa",
+    "src\\concurrency\\latch_manager.cc": "44b41668ef1ac3d43ed75c0c28bb09fef073144b8b59cccb04ba054d30276750",
+    "src\\concurrency\\latch_manager.h": "7ca59abf5b7981be6ee4c6b5e481c0a410f49606ac5541b938bde0391f86236c",
+    "src\\index\\bplus_tree.cc": "f96ee51b075a9afbecde70201bea3821ddb70f86e7d408c42b30fbabf9d0cf48",
+    "src\\index\\bplus_tree.h": "1e43582b4fb6d910f657e692f56eda3c8005531b6a69031f28dd817a0fb0fa01",
+    "src\\index\\hybrid_index.cc": "5868042e3cb93a71735f87a65412d5a1be3e335d97f1697e9f604fe036cc7cef",
+    "src\\index\\hybrid_index.h": "8bcb4c44ada1476613f0d87bc6247cfad1831e114110140e5f9492e03ac52087",
+    "src\\index\\index_entry.cc": "43150b941977ad786790b93aaf36695083a851c90b58aa58200cd56938d9a117",
+    "src\\index\\index_entry.h": "2e4714aff029f1264af6b6d08a86cf2eec3298ac196412959a799563850d7a89",
+    "src\\index\\index_registry.cc": "25947219c032f2281a379ab7a867c7f7cd4b90d308a592c15de6c250c4c42e62",
+    "src\\index\\index_registry.h": "f811bd03fe32790061a638e5fbf3d9a4823f41e82fd16b27cdd0c62f053f2085",
+    "src\\index\\mock_tree.cc": "f33fdcf3da1727b711a2c7fbf7ea620b7c73daedc7b665070071ff260c3ea46f",
+    "src\\index\\mock_tree.h": "9b81edeba148b5ec757fd4a76987585639ca519aeb80beca5c69b57d746a824a",
+    "src\\index\\page_utils.h": "4dbdca3c4fae3dde2c9e625e0a45a352a7e65a7b9a3e3d0c8566802cd81c1cc9",
+    "src\\index\\rtree.cc": "c87d37e679c93556985d1605c6a474a2819b78f838ccacc0994ce9faf5284162",
+    "src\\index\\rtree.h": "d7663a59b2cada40cc410fa46861c850902cc29aa425e1c10b131851092f3aac",
+    "src\\index\\tree_ops.cc": "0e56a654b25fc3059dd5bed29a9ef8f035d54b4f2506fc05753903c6bff6e04c",
+    "src\\index\\tree_ops.h": "ce913ab19cd354764c1fc7577bb239655d8187b4095cf16b4323c118b4bd18e7",
+    "src\\migration\\hot_cold_tracker.cc": "d8a59e32d58c7ce1bead1af919233e2c17a6ccf5f2fc91a4ce7b0008a6354332",
+    "src\\migration\\hot_cold_tracker.h": "96e27472c05fdf8b4d25efd0731a13ee4f22c2b8aecc3b9b5daa7188efdb4af6",
+    "src\\migration\\migration_policy.cc": "137b8765dd01e6ae4c2e7641d2a9357f59e935107c72e91cdccff9aaeec24449",
+    "src\\migration\\migration_policy.h": "a5fea8537450adde84afd9f16eb53d9b8fa80ef07d2bcae6e20941c5cdaebd6d",
+    "src\\storage\\buffer_pool.cc": "020fddba0463f6f76054c0717967ec6b8ded9d5061ec691320c078e0b1b4dd74",
+    "src\\storage\\buffer_pool.h": "7eff4ca427dd4c5aa79e161ecd4b097129815e918c7297ee4badd64b8c780e52",
+    "src\\storage\\disk_manager.cc": "21a78085e8cc1553dda098c485464206c79e7ff8d9894d846bf4154085f6a855",
+    "src\\storage\\disk_manager.h": "c6b8d40cb67ead07fa6cd2698afbbd2e14c336f5320b376453151ff215615b05",
+    "src\\storage\\eviction_policy.cc": "7f69c0256dba96e21a173409c40fdc41c7c8d8a5757a5ca22320849e18dbc678",
+    "src\\storage\\eviction_policy.h": "eed5315d10205e09c6239ad12bea1d3ad225146ab9979dd019ef76244f386fae",
+    "src\\storage\\fault_inject.cc": "210d9f4e619495c5ecdf2a71a6423951d3f651603e7aa74f075e3a3b9886dad4",
+    "src\\storage\\fault_inject.h": "4eee04fb67c43035941816be92b914ee2fd0be170a0d434c8ebde6e3c4be6593",
+    "src\\storage\\meta_page.h": "6357de7f2147e4ad3784811ce55d403e05d4e7b91461984c4b0c561a671ff6af",
+    "src\\storage\\page.cc": "833752e177741aeb500f70f2d0ac09f311acdd3a033b9d1aed670810f44b93f7",
+    "src\\storage\\page.h": "7271b95e028c022671ea15ab033b6ba4f9f6c5190b2c9c9653b4fd4800e0ccbc",
+    "src\\storage\\recovery.cc": "55ab34c09e08ab7893fd1330aeef05fc175a0869c7909e31cef0b4521e26e0ef",
+    "src\\storage\\recovery.h": "e295d1efe48715ab17af102e8578043e89d73d09335bff806a6b063a2181644f",
+    "src\\storage\\wal.cc": "bdf3a4e50ad454304af1adcc285fa3f822c2554101a98a8d4f69020cb66ea3f8",
+    "src\\storage\\wal.h": "c9f076410b2c9224d92b0d30318c8d18f7d39615a388b90a109a54bff65373e1",
+    "src\\util\\config.cc": "7a13b7d5065884dd3a0fdee1a14db79c9c90fc2c60c351ab83de395c028b6974",
+    "src\\util\\config.h": "3b86c305fb0bf0e820be40999e629a5c2577331d8f07a78018df7992d121b626",
+    "src\\util\\crc32c.cc": "dc47c97501d0c0c545479bce1f84d4e6e731729cd58fdc1e4e9c0c96bf82c26a",
+    "src\\util\\crc32c.h": "31aa841f417b00c357916851b893d4cce4d0d93c0f4f1afbc245951074fea88e",
+    "src\\util\\log.cc": "1dd4d3c53e61c7d60aa373f398ff4a209c80625eaa16cc57ee7c0d0a9994e185",
+    "src\\util\\log.h": "99776f3ce9dbf5c232c261b3c94e7284255a138d55999a386bcc94265012ea9f",
+    "src\\util\\status.cc": "f23bc55754fe4b563ed0fae4ccc4c3e53ae6f1537503b2774f9eeccafe3c6b25",
+    "src\\util\\status.h": "7b5f70c3dbc7eda970d100fb270b44d4975ebd2a757e1465915ac94ebb300da7",
+    "src\\util\\types.h": "35d5b832887fdd165743786097728f3eaf20cc37f1604e6dd470d53dbb025aa5",
+    "tests\\bench\\test_spatial_reference.cc": "e7bfbfc08007fe76102daca7f10e6e44b34df6e43908dce46cfd308e221cf935",
+    "tests\\concurrency\\test_c0_latch.cc": "aa0d169e408043b26580dd20de24492b37a5620152bb5cbe36970aa4840b4bc3",
+    "tests\\concurrency\\test_c1_replay.cc": "1eedf33650d9f4cbaab728519d2ddc5f1b80dba0fd66b81d1daa0892ca74b77a",
+    "tests\\concurrency\\test_hybrid_concurrency.cc": "ef21a8af48d56137bc3644d9fed957a0f99f9eb93c9be4d09eee705c012480de",
+    "tests\\concurrency\\test_page_latch.cc": "d0b06317089c091109d68e3fcc6e436679c70caa1391ed791da1b3c98639d26f",
+    "tests\\concurrency\\test_write_abort.cc": "c7b677a68b943758c29d671be456ab3f6eefb4433a20b43c823dc71968089aa0",
+    "tests\\crash\\crash_test.cc": "89ce00ff6f8dbfa79779b3be5022413b900082241e518434869428c77859c875",
+    "tests\\harness\\smoke_main.cc": "36ac2a2ad334ba3ce8aa0d927a29786d18fcba8f89fdcaf3c43d92670fa1f44c",
+    "tests\\harness\\test_harness.h": "8fb27e5c80605d2b4b7215810b2c55d377aea0d5aec4b359a6b92b17be561694",
+    "tests\\index\\test_bplus_diff.cc": "082db421bdbe01d8afc0fd3042789e61e83f03be16ad378461abede993b30e31",
+    "tests\\index\\test_bplus_validate.cc": "92aa1f0eea07a75076733583c5278b276378ddaa064e9089b138414bb6ce58db",
+    "tests\\index\\test_hybrid_diff.cc": "10a74dc5a57484b58ba6a0443499b650914e114811b6beaad4132ae0952637e2",
+    "tests\\index\\test_registry.cc": "98a15ae7f84651708a04c5ed806ccb7d75e23e8e47381c7f7ab56a9624c4628f",
+    "tests\\index\\test_rtree_diff.cc": "7fa92de8e44d08d7002a17399df4987099c43717dcbd3ad0420a09f8491c58e7",
+    "tests\\index\\test_rtree_validate.cc": "599a4dda85c17c609b2fffa5036baa2b848e7ee58d190efd92a619db0b240a78",
+    "tests\\index\\test_tree_ops_contract.cc": "a4476e2b9492853fc9806f6b05b12c4170d9bd6abcb5b551bb34c509b3f26fd6",
+    "tests\\index\\test_wal_barrier.cc": "0b031056e2ea78709b35dee5d048104603fe9c1d4257b58b29740363360daaab",
+    "tests\\integration\\test_smoke.cc": "0b0552018cc8fc6eea675e0f9c21d1b90529c59772571071f1a33546ad26906d",
+    "tests\\storage\\test_metadata.cc": "d19daf7dce8f68a7814716779fdeb78d0b359af8e2e5524749fe6df35e7a443d",
+    "tests\\storage\\test_page.cc": "7fa90c90d399813a0c124f54ab4187978d2e7b9c71a7b1546992d5a91ba89293",
+    "tests\\storage\\test_recovery.cc": "bdea98016354c7e7a3aaad9e181f3fe452f240c5c5e84653305a6275f76a873f",
+    "tests\\util\\test_config.cc": "9a6146516c2748c16b6b063bacb5601d1bafcce4214fd9d384897d230f6c8e3c",
+    "tests\\util\\test_crc32c.cc": "3bfef43a2d3a4f72ecc6cb274a517e5328f54b008af7f1fa5aa5b4c36f122bd2",
+    "tests\\util\\test_status.cc": "2a02dfcfb25bbf17e4af621f015229ecd472efc2cda79e78ccf6f5d5ee7ed897",
+    "scripts\\accept_c1.py": "bff7ba5f25a93e38e484d993d43e09edf4e028c8628136d60ce501b80de92f79",
+    "scripts\\bench.py": "f7cabad60907c3650a8d9ad3bb2ad29ef8977adef3f5b8d64171ed0ab560ac0d",
+    "scripts\\build_local.py": "9c7c17239437c55d02085f7de1b1417a3e7a4c4e1eb64588946aaf115cb8d224",
+    "scripts\\check_ascii_literals.py": "356de01b808bab90826a7ba866dd1b3bf9a24acf69b0276fd0a1dfa642d8a3cc",
+    "scripts\\check_layering.py": "92049bed513f322792df7226404a8c135641f0d85079ecba1609fbc0ef3b68f4",
+    "scripts\\crash_matrix.py": "27ded8ea51126519cbe5ad8a932fdab7e7b05dca05dee04965760206103d0a8c",
+    "scripts\\msvc_compile.py": "cf117b72bddce5c1bd3fd1e0c9cecfca8f2275ceaaa9a334c12a6ae60c160764",
+    "scripts\\run_pipeline.py": "c9effbef3527a2477cf13a12c0dad9aef467a8ea7cf24379cfae40633c4abc02",
+    "scripts\\soak_hybrid_heat.py": "0d41e36038bb1e84e7b704e27f8031c7cdc3671400937896cc02f0724095e68f",
+    "scripts\\test_bench.py": "af9da0428974dd2689de14d78bedd668fb6a7525288577e24ed2bbf3c014a1f5",
+    "scripts\\test_pipeline.py": "55acf3b35c9de72b026e9d19e30f91924c06442968300ece460d5f3445a74593",
+    "scripts\\validate_tree.py": "0d983696aad39293c5712051b93f92ed957d3244fa0948638c171e16c7131d17",
+    "demo\\demo_main.cc": "5765a2219a954c8f8f9e37544ab6bdaab0950febed9741add4646d77c13d6279",
+    "demo\\pipeline_main.cc": "68e658214cfaa30e0ff76075716969bc65cddae3642832415945036eafe6fb2a"
+  },
+  "binary_sha256": {
+    "build-ninja\\c0_boundary_probe.exe": "a0b6103adb9ff01d104205528eb68856bb66887f3fd7fd64b740970272fb64ed",
+    "build-ninja\\ltm_bench.exe": "5f5cc98b2ae96e112a03581befdb50f6ace502110042678cc008f0e7bf710e84",
+    "build-ninja\\ltm_demo.exe": "7a064b6696b3c04c0d77f5652f7fff4e1f661174d8c6eab8cc4387aad111ca65",
+    "build-ninja\\ltm_pipeline.exe": "d58a5356f2e1b78ffca9a4d5597789f6835d26e10e59048b6ca73a8f8cf7c5a9",
+    "build-ninja\\ltm_smoke.exe": "ab46c1471e11c45e3939fe72320dbf030d0771feb67c3667ffa316a114228fd1",
+    "build-ninja\\ltm_validate_bplus.exe": "100bbcf1a3867d99ebccf35c75e69cc7994bcade2362728290e63b576d1d9b8c",
+    "build-ninja\\ltm_validate_rtree.exe": "618fc2e8a9fe8d9217458eb4d42550c0310e11f53cbb05a0c4bbd88aef6aded1",
+    "build-ninja\\soak_mixed.exe": "20e9adbcee578e97add1c875d6e066861f95c13b21637759324ba3114a1a8544",
+    "build-ninja\\test_bplus_diff.exe": "71448ab4be670aa5c43abf12f6ea9b6d9c8375996b32aa486e4fea7741985e98",
+    "build-ninja\\test_c0_latch.exe": "81131f04f3d3de5a82b35368adfd1a5ad6fa467a5694429125a1cd1b76a4c86f",
+    "build-ninja\\test_c1_replay.exe": "2641e0f1cccdc7a68a4f46d858209e0629b6f72f1507ae46b78dce80ea1765b5",
+    "build-ninja\\test_config.exe": "64218df4bff01d6bd65b1d9da7bf24b7233eb9ec900ddcd75c3c60186eebcb16",
+    "build-ninja\\test_crc32c.exe": "51f58a171f4127b2359111de44b59d1618f9e332c52f5f6a4224826cf1e5b0f5",
+    "build-ninja\\test_hybrid_concurrency.exe": "b9103abce41aa2b66153c605d0c7d14ee0951359d9fea4d7563f510135c36bbd",
+    "build-ninja\\test_hybrid_diff.exe": "8908d703a402d2df9ee01b349a19bb053069783acffbdceb01c508d5663cf8d1",
+    "build-ninja\\test_metadata.exe": "143af6e30e4cabf53444638bda4e3a6600db2adfcf8d42569cd4aaca52976f39",
+    "build-ninja\\test_page.exe": "f993b585a0565d82a1385b0fcebf2b5fa3915c0d3875dea368ff1a2d555df8b9",
+    "build-ninja\\test_page_latch.exe": "25c15c148e7b2f9d2cbc30d4461e2f2f7ea620812ad7ab08df1b81902f618a7a",
+    "build-ninja\\test_recovery.exe": "1f7a91302923cd5d32b5d14b4469c68fc08ebada4d12e053a15365908045945f",
+    "build-ninja\\test_registry.exe": "1d9c2f45b4073f2f5b5087f078fb25ff748e7efb85a7816c3b57782d6a5b46f6",
+    "build-ninja\\test_rtree_diff.exe": "a25bc9713e82012816ccb36ffc92f20e2108689a5ecb984eb5b372008cad9494",
+    "build-ninja\\test_smoke.exe": "4db8b769e7977b6f9302bca7d1f061fb283aa2d4c16542ad402e856e7ca0a69b",
+    "build-ninja\\test_spatial_reference.exe": "fa76fbee1d7d9a2051e24ab386831cba602c723993eb9d4e19f07fff4f9a79b6",
+    "build-ninja\\test_status.exe": "810326c275111c4389e3395db993c5575e6e5f16b53a36c3f901deea437740e6",
+    "build-ninja\\test_tree_ops_contract.exe": "958476d91cd34526b68350fa9b21f4f2652bf78e2942db2aaeda2e2b37caa673",
+    "build-ninja\\test_wal_barrier.exe": "08f93e3b12c2322fc8bbe11f463cb650e2a1dabf0d36fb5e1a22af250af2f45b",
+    "build-ninja\\test_write_abort.exe": "854d1964351e41e0e35fbab38afa961d9d383a1f1d87984f566fa27bdf4ba214",
+    "build-asan\\c0_boundary_probe.exe": "75c17ba1c000c14b60598f28858d6abba651b85c5531083f21bd3657f39a9956",
+    "build-asan\\ltm_bench.exe": "7b5191aba96de2917e836f6c65e888f8f327f08c4d7fd67dc5e175d6c040a009",
+    "build-asan\\ltm_demo.exe": "684ad54cd56012cba93feffa92766f670b658f9c8176155a73b15dda26ea9c60",
+    "build-asan\\ltm_pipeline.exe": "fa15b1ff07bcf91f7fc99ad660f4281621a7190a42cb3eedcd0cb862182b463f",
+    "build-asan\\ltm_smoke.exe": "6afb2cd26fd2572aedd296ed5113a8b81b53137f34e0063994be734ee9738157",
+    "build-asan\\ltm_validate_bplus.exe": "b2a9124f65ce07c7124aa3b4491807cf856dc6efa5a300379158341795f9560e",
+    "build-asan\\ltm_validate_rtree.exe": "c64ba17644d428e0b5e44e9efe856f9b3c5b6a418ab8f027153e48317db4459e",
+    "build-asan\\soak_mixed.exe": "8e846a2c31d9ee48629b6fd1f496c05d650fdbafdebbb8ff3c38248ab68224eb",
+    "build-asan\\test_bplus_diff.exe": "2d7fff8d382fd66b883c7bc299ce2e2552f26131cf28dc633616ef8d3331ac58",
+    "build-asan\\test_c0_latch.exe": "dd08bb3e7e6ad4366a34682ea6811929ce1524b2b065a5242ab8717a3c2cae6a",
+    "build-asan\\test_c1_replay.exe": "1deaa61f59e9021db06a0ee8e80a485235d6eb16f904b034a6ad809f90a9b647",
+    "build-asan\\test_config.exe": "5b50acb8f7f8fe8950533d8a21b920af3aaca7a469995e856022e3b40d1233a7",
+    "build-asan\\test_crc32c.exe": "287d31b678f7f8d605a56b06c3d4f6c16ea4db050cf0a75f354a8dad8cf3f111",
+    "build-asan\\test_hybrid_concurrency.exe": "8cc35275a5d6e63c8a8406cb342c16e826a1e80277ffa28949a55200d508c89b",
+    "build-asan\\test_hybrid_diff.exe": "7346b70b0cbc007d38926c34a8c87132563d61f8a8e14752c6f2dd5ce2a2bd9a",
+    "build-asan\\test_metadata.exe": "5b97998a738c15f422cf60c4a244a8eeacc4b47910cacf6f7a94e96ddedf1ed3",
+    "build-asan\\test_page.exe": "da404a5cbf55f7f98d260545418db22c0ae52a185e1626c3e93087d0751aef60",
+    "build-asan\\test_page_latch.exe": "8475272b700ff709cf3e51f10f5830b7edb8ebfee9cabc6161b2aacedb7f6e4a",
+    "build-asan\\test_recovery.exe": "59c441803624fc5b36bb47d6e84d19f4503f8208be53f32495fb5321169eaa5c",
+    "build-asan\\test_registry.exe": "914b674b13dda5d0fb17c4a334b5e1c02e7c6fb18bd154f5cd96a466db171e24",
+    "build-asan\\test_rtree_diff.exe": "8e98f01c47ceff3a97a5e40ae50662cd690a1a3b97ca4b0370bb92a3a21cefaf",
+    "build-asan\\test_smoke.exe": "b56815f9d088a27f2df03bf34a36be3e696ba352e4d05c356866d2c8b48ac8b3",
+    "build-asan\\test_spatial_reference.exe": "f958940d1f4a912f79d43131e53667a3fc07c93c40193d4ae84b1cd9de48a6b2",
+    "build-asan\\test_status.exe": "4d4f2c11b757e1b11de133273b8af88fe82d1ddba195a9817244b2e24f72607b",
+    "build-asan\\test_tree_ops_contract.exe": "819246bf11846d14d47a9160c6d9e1060bbfad6529d4b6689f8137b2ba6c437f",
+    "build-asan\\test_wal_barrier.exe": "1e3396e03087abce17cadf3c0e1086dcb0e2f9ac60883b1d44ddad5ebdddd222",
+    "build-asan\\test_write_abort.exe": "a4953574a8243cb053233ccbd027f8f05e16e581adb80bba7499a7175f3ddf3c",
+    "build-fi\\c0_boundary_probe.exe": "cccf4bdea7f40658d96308a4ecafdb4a23527608168672b11cea5333bcc6e5c8",
+    "build-fi\\ltm_bench.exe": "d18d248a453b1814e8032a8c25d10305022b07a2ec631b4687f6757891280aa8",
+    "build-fi\\ltm_crash_test.exe": "b0bc7bb2b05c10efe6c2d41ece9d1ced777b12aecc6b3eb39d872b22c311ce1c",
+    "build-fi\\ltm_demo.exe": "b97c53ce5d896f8fde7152725064a92da91b7de351649ba7259e8510a5c216cc",
+    "build-fi\\ltm_pipeline.exe": "2bd7ac1ae2bf7282bffc15a17c074a94dd4e2062837fdc5b2be8f9283e61de70",
+    "build-fi\\ltm_smoke.exe": "5671a8b46627567d0a172ae1422b3008b7966e1123a5e57d098e80d5e5050526",
+    "build-fi\\ltm_validate_bplus.exe": "96daf28952e6aef2b0bd3f67648a3e4c3a317b37adbd862bf1cdd59d9c28fc36",
+    "build-fi\\ltm_validate_rtree.exe": "5f7a7a16c16789b045a7583cbf4a2ab7a7fc8db0458029cc1c560c1edae46f34",
+    "build-fi\\soak_mixed.exe": "afaf3a53157339a142e60d02659b78ce3ede9475bc74ee3fc6fb9f20cb79348a",
+    "build-fi\\test_bplus_diff.exe": "ae2d50827a59bd1860c53b4f34332315925b173ff854f189e75bfb82d14934bc",
+    "build-fi\\test_c0_latch.exe": "ded0f5f142109852d45cd06cb24880483d7592ae7f828e231680c7642d974e6e",
+    "build-fi\\test_c1_replay.exe": "dc2e717007d2d18cf7469af2e974dc9287fa45bd923822d5495670e96ce826d5",
+    "build-fi\\test_config.exe": "7cf4b2cfece7489d3a149d8284827d819beeb494c475b4645989c246bc1f3038",
+    "build-fi\\test_crc32c.exe": "9f730fbd3f877e3485f968a3d9c632b08dd1f3ecb004e7605fa3992c25601cf3",
+    "build-fi\\test_hybrid_concurrency.exe": "9b4661765337eeeab94856e387f8bfc0bd78750807372a5aac05e17e7a9a5c03",
+    "build-fi\\test_hybrid_diff.exe": "78e597fbf5cb68c38e13c60e219ad8834b11df80d0cdf21217bf5751484c66cc",
+    "build-fi\\test_metadata.exe": "586b12c741896e9e04bd3f2ec4d9cd6f8867e11128971d4b6d78dba578183476",
+    "build-fi\\test_page.exe": "f0bcb8d95fafa926b03fdeabac0e3d1f1101af917f8d12926acec80ef044c4d3",
+    "build-fi\\test_page_latch.exe": "af930c4f94724d8bd12a770e00d1a19ea784eb784b79cffe10dd1ae4e27cab59",
+    "build-fi\\test_recovery.exe": "a5bc747c437a8933e42466afd8bbb6fad0fca461f8222de5f0bc5353651a8590",
+    "build-fi\\test_registry.exe": "d87e5ca5ddb983beb8a0f686b283dc869957e04075b2a6955f3b5f64492debcd",
+    "build-fi\\test_rtree_diff.exe": "9bdf5038c5e777c1e4fc88a22be131724105474ee2d9234e7a9b1b9e7a46ee9c",
+    "build-fi\\test_smoke.exe": "33e1b9b23c3f9beb111b5343b3f6eaa3e744ccecb443ab5695269efa51ed6ca2",
+    "build-fi\\test_spatial_reference.exe": "1c530f78d29caa28c192c324c5740ca78ff324979ad7ff9c8414e9c5c25ac24f",
+    "build-fi\\test_status.exe": "d19e4c15020a47690c065c0804593f822656c475355705f4acbe061f455b0402",
+    "build-fi\\test_tree_ops_contract.exe": "354bb3487d6cb4f7e5f0cc141e410c17fecdc768c7147a88487d06023660ec1d",
+    "build-fi\\test_wal_barrier.exe": "26a74b3c512b8395711f9dc5218f8bea4bc49ca302731df4b0bc858d9b227f81",
+    "build-fi\\test_write_abort.exe": "48ed9213414c007fa1b7f60f7db4fb575bcea6be6dd66f8474b4e6fe9108a776"
+  },
+  "ctest_concurrent_builds": true,
+  "normal_damaged_data_unchanged": true,
+  "asan_damaged_data_unchanged": true,
+  "crash_summary": {
+    "total": 78,
+    "passed": 78,
+    "real_crashes": 72
+  },
+  "source_unchanged": true,
+  "binary_unchanged": true,
+  "finished_utc": "2026-10-07T07:47:32.722580+00:00"
+}

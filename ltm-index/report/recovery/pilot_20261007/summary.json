@@ -1,0 +1,15 @@
+[
+  {
+    "tail_updates": 16,
+    "repetitions": 1,
+    "wal_bytes": 827568,
+    "records_scanned": 218,
+    "recover_us_min": 13271,
+    "recover_us_median": 13271,
+    "recover_us_max": 13271,
+    "storage_ready_us_median": 20976,
+    "checkpoint_us_median": 12429,
+    "records_redone_median": 53,
+    "pages_redone_median": 3
+  }
+]

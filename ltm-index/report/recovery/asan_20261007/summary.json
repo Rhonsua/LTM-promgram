@@ -1,0 +1,28 @@
+[
+  {
+    "tail_updates": 0,
+    "repetitions": 1,
+    "wal_bytes": 592,
+    "records_scanned": 2,
+    "recover_us_min": 658,
+    "recover_us_median": 658,
+    "recover_us_max": 658,
+    "storage_ready_us_median": 5533,
+    "checkpoint_us_median": 13168,
+    "records_redone_median": 0,
+    "pages_redone_median": 0
+  },
+  {
+    "tail_updates": 512,
+    "repetitions": 1,
+    "wal_bytes": 29463656,
+    "records_scanned": 7640,
+    "recover_us_min": 795199,
+    "recover_us_median": 795199,
+    "recover_us_max": 795199,
+    "storage_ready_us_median": 1128357,
+    "checkpoint_us_median": 13452,
+    "records_redone_median": 2695,
+    "pages_redone_median": 21
+  }
+]

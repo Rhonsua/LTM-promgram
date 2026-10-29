@@ -1,0 +1,14 @@
+R tree validation passed
+  params   : ops=8000 capacity=32 frames=32 dim=2 policy=quadratic seed=42
+  loaded   : height=2 pages=90 entries=1788 avg fill 62.1%
+  emptied  : height=1 pages=21 entries=402 avg fill 59.8%
+  size     : height=1 pages=21 entries=402 (inserts 5578 / overwrites 635 / erases 4541)
+  structure: splits 91 / merges 72 / borrows 481, avg fill 59.8%
+  space    : avg internal-page MBR overlap area 1950988.2913
+  KNN      : visited 6 pages / brute force 20 pages, prune 70.0% (scanned 91 entries)
+  buffer   : hit rate 63.8%, evictions 127773 (dirty 4541)
+  WAL leak : outside-txn 0, missing-before 0, identical-skipped 0, unstamped-writes 0
+  WAL      : deltas 25551, LSN stamps 25551 (missed 0), sync-on-flush 280, I6 violations 0, page bytes 104656896 vs changed-byte range 80568573 (1.3x)
+  checks   : I9 MBR exact union, I3 fill >= 40%, I4 equal path lengths, ScanAll/Search/SpatialQuery/KNN agree with the truth table
+
+--- stderr ---

@@ -1,0 +1,12 @@
+{
+  "passed": false,
+  "started_utc": "2026-10-16T09:40:24.082950+00:00",
+  "arguments": {
+    "build_dir": "/mnt/d/db_project/LTM/ltm-index/build-accept-mixed-tsan",
+    "output_dir": "/mnt/d/db_project/LTM/ltm-index/report/acceptance/mixed_measure_20261016/tsan/pipeline",
+    "skip_build": true,
+    "timeout": 300
+  },
+  "runs": [],
+  "database": "/mnt/d/db_project/LTM/ltm-index/report/acceptance/mixed_measure_20261016/tsan/pipeline/database"
+}

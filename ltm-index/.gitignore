@@ -1,0 +1,37 @@
+# 构建产物
+build/
+build-*/
+out/
+*.obj
+*.o
+*.lib
+*.a
+*.exe
+*.pdb
+*.ilk
+*.exp
+compile_commands.json
+CMakeCache.txt
+CMakeFiles/
+.ninja_deps
+.ninja_log
+*.vcxproj*
+*.sln
+
+# 运行期数据与日志（基准测试会生成大量文件）
+data/*
+!data/.gitkeep
+log/*
+!log/.gitkeep
+
+# 实验产出：CSV 与图可以入库作为结题证据，临时文件不入库
+report/*.tmp
+report/figures/*.tmp
+
+# 编辑器与系统
+.vs/
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+desktop.ini

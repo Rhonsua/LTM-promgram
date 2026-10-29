@@ -1,0 +1,87 @@
+{
+  "passed": false,
+  "started_utc": "2026-10-07T07:01:39.637002+00:00",
+  "runs": [
+    {
+      "name": "normal_chain",
+      "command": [
+        "D:\\python\\python.exe",
+        "D:\\db_project\\LTM\\ltm-index\\scripts\\run_pipeline.py",
+        "--output-dir",
+        "D:\\db_project\\LTM\\ltm-index\\report\\pipeline\\acceptance_verified\\normal"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "passed": true
+    },
+    {
+      "name": "asan_chain",
+      "command": [
+        "D:\\python\\python.exe",
+        "D:\\db_project\\LTM\\ltm-index\\scripts\\run_pipeline.py",
+        "--build-dir",
+        "build-asan",
+        "--output-dir",
+        "D:\\db_project\\LTM\\ltm-index\\report\\pipeline\\acceptance_verified\\asan"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "passed": true
+    },
+    {
+      "name": "driver_contract",
+      "command": [
+        "D:\\python\\python.exe",
+        "D:\\db_project\\LTM\\ltm-index\\scripts\\test_pipeline.py"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "passed": true
+    },
+    {
+      "name": "existing_database_protected",
+      "command": [
+        "D:\\db_project\\LTM\\ltm-index\\build-ninja\\ltm_pipeline.exe",
+        "--stage=load",
+        "--run-dir=D:\\db_project\\LTM\\ltm-index\\report\\pipeline\\acceptance_verified\\normal\\database"
+      ],
+      "exit_code": 2,
+      "expected": 2,
+      "passed": true
+    },
+    {
+      "name": "missing_database_rejected",
+      "command": [
+        "D:\\db_project\\LTM\\ltm-index\\build-ninja\\ltm_pipeline.exe",
+        "--stage=verify",
+        "--run-dir=D:\\db_project\\LTM\\ltm-index\\report\\pipeline\\acceptance_verified\\missing"
+      ],
+      "exit_code": 2,
+      "expected": 2,
+      "passed": true
+    },
+    {
+      "name": "invalid_stage_rejected",
+      "command": [
+        "D:\\db_project\\LTM\\ltm-index\\build-ninja\\ltm_pipeline.exe",
+        "--stage=invalid",
+        "--run-dir=D:\\db_project\\LTM\\ltm-index\\report\\pipeline\\acceptance_verified\\invalid"
+      ],
+      "exit_code": 2,
+      "expected": 2,
+      "passed": true
+    },
+    {
+      "name": "metadata_header_gap_observed",
+      "command": [
+        "D:\\db_project\\LTM\\ltm-index\\build-ninja\\ltm_pipeline.exe",
+        "--stage=verify",
+        "--run-dir=D:\\db_project\\LTM\\ltm-index\\report\\pipeline\\acceptance_verified\\repairable_metadata"
+      ],
+      "exit_code": 0,
+      "expected": 0,
+      "passed": true
+    }
+  ],
+  "existing_database_unchanged": true
+}

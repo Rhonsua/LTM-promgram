@@ -1,0 +1,24 @@
+[
+  {
+    "frames": 12,
+    "regime": "evicting",
+    "repeats": 3,
+    "api_throughput_median": 859.6759537459949,
+    "api_throughput_min": 847.5696787032863,
+    "api_throughput_max": 865.8508427614867,
+    "wall_throughput_median": 491.9027075472796,
+    "page_reads_median": 1095,
+    "note": "Interleaved probes affect cache; these are observations, not uninstrumented performance claims."
+  },
+  {
+    "frames": 128,
+    "regime": "resident",
+    "repeats": 3,
+    "api_throughput_median": 1345.9578194765477,
+    "api_throughput_min": 853.9002320046934,
+    "api_throughput_max": 1352.7369927574464,
+    "wall_throughput_median": 622.0421893894531,
+    "page_reads_median": 0,
+    "note": "Interleaved probes affect cache; these are observations, not uninstrumented performance claims."
+  }
+]
